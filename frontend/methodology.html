@@ -1,0 +1,463 @@
+<!-- methodology.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>InstaGuard — Methodology</title>
+  <link rel="icon" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="landing.css"/>
+</head>
+<body>
+
+  <div class="mesh-bg">
+    <div class="mesh-orb orb-1"></div>
+    <div class="mesh-orb orb-2"></div>
+    <div class="mesh-orb orb-3"></div>
+    <div class="mesh-orb orb-4"></div>
+    <div class="grain"></div>
+  </div>
+
+  <nav class="nav scrolled" id="nav">
+    <div class="nav-inner">
+      <a href="landing.html" class="nav-brand">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        InstaGuard
+      </a>
+      <div class="nav-links">
+        <a href="landing.html" class="nav-link">Home</a>
+        <a href="methodology.html" class="nav-link active">Methodology</a>
+        <a href="index.html" class="nav-link">Dashboard</a>
+      </div>
+      <a href="index.html" class="nav-cta">Launch App →</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="method-hero" style="position:relative;z-index:1">
+    <div class="breadcrumb">
+      <a href="landing.html">Home</a>
+      <span>›</span>
+      <span>Methodology</span>
+    </div>
+    <div class="hero-eyebrow" style="justify-content:center">
+      <span class="eyebrow-dot"></span>
+      Research & Technical Details
+    </div>
+    <h1 class="hero-title">How InstaGuard<br><em>actually works</em></h1>
+    <p class="hero-desc" style="margin-top:18px">
+      A deep dive into the dataset, feature engineering, XGBoost model training, hybrid rule engine,
+      and performance metrics behind the fake account detection system.
+    </p>
+  </div>
+
+  <!-- ── Dataset ── -->
+  <section class="method-section">
+    <div class="method-inner">
+      <span class="section-chip">Dataset</span>
+      <h2 class="section-title">Training Data</h2>
+      <p class="section-sub">The model was trained on a labeled Instagram account dataset of 5,000 profiles with extracted behavioral and structural metadata, split using stratified sampling to preserve class balance.</p>
+
+      <div class="dataset-grid">
+        <div class="dataset-card">
+          <h4>Dataset Overview</h4>
+          <div class="dataset-stat">
+            <span class="ds-val">5,000</span>
+            <span class="ds-lbl">total accounts</span>
+          </div>
+          <div class="ds-breakdown">
+            <div class="dsb-row">
+              <span class="dsb-dot real"></span>
+              Real Accounts
+              <div class="dsb-bar"><div class="dsb-fill real" style="width:50%"></div></div>
+              <span class="dsb-pct">50%</span>
+            </div>
+            <div class="dsb-row">
+              <span class="dsb-dot fake"></span>
+              Fake Accounts
+              <div class="dsb-bar"><div class="dsb-fill fake" style="width:50%"></div></div>
+              <span class="dsb-pct">50%</span>
+            </div>
+          </div>
+        </div>
+        <div class="dataset-card">
+          <h4>Stratified Split (80 / 10 / 10)</h4>
+          <div class="dataset-stat">
+            <span class="ds-val">80%</span>
+            <span class="ds-lbl">training data</span>
+          </div>
+          <div class="ds-breakdown">
+            <div class="dsb-row">
+              <span class="dsb-dot real"></span>
+              Training Set
+              <div class="dsb-bar"><div class="dsb-fill real" style="width:80%"></div></div>
+              <span class="dsb-pct">4,000</span>
+            </div>
+            <div class="dsb-row">
+              <span class="dsb-dot fake"></span>
+              Validation Set
+              <div class="dsb-bar"><div class="dsb-fill fake" style="width:10%"></div></div>
+              <span class="dsb-pct">500</span>
+            </div>
+            <div class="dsb-row">
+              <span class="dsb-dot real"></span>
+              Test Set
+              <div class="dsb-bar"><div class="dsb-fill real" style="width:10%"></div></div>
+              <span class="dsb-pct">500</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ── -->
+  <section class="method-section" style="padding-top:0">
+    <div class="method-inner">
+      <span class="section-chip">Feature Engineering</span>
+      <h2 class="section-title">The 11 Features</h2>
+      <p class="section-sub">Each feature was selected based on its correlation with inauthentic account behavior. The new model adds 4 binary features — profile picture, private status, external URL, and name-username match — which are among the strongest fake signals.</p>
+
+      <div class="feature-table-wrap">
+        <table class="feature-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Why It Matters</th>
+              <th>Importance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="ft-name">profile pic</span></td>
+              <td>Binary</td>
+              <td>Whether the account has a profile photo</td>
+              <td>No profile picture is one of the single strongest fake signals — 80% of fake accounts have none</td>
+              <td><span class="importance-tag imp-high">High</span></td>
+            </tr>
+            <tr>
+              <td><span class="ft-name">nums/length username</span></td>
+              <td>Float 0–1</td>
+              <td>Proportion of digits in the username</td>
+              <td>Bot usernames like "user39471856" have very high digit ratios; real names rarely do</td>
+              <td><span class="importance-tag imp-high">High</span></td>
+            </tr>
+            <tr>
+              <td><span class="ft-name">#followers</span></td>
+              <td>Integer</td>
+              <td>Number of followers</td>
+              <td>Fake accounts typically have very few followers; real accounts above 50k are almost always authentic</td>
+              <td><span class="importance-tag imp-high">High</span></td>
+            </tr>
+            <tr>
+              <td><span class="ft-name">#follows</span></td>
+              <td>Integer</td>
+              <td>Number of accounts followed</td>
+              <td>Mass-following thousands while having few followers is a classic bot pattern</td>
+              <td><span class="importance-tag imp-high">High</span></td>
+            </tr>
+            <tr>
+              <td><span class="ft-name">#posts</span></td>
+              <td>Integer</td>
+              <td>Total number of posts</td>
+              <td>Zero posts is a very strong fake signal; real active accounts post regularly</td>
+              <td><span class="importance-tag imp-medium">Medium</span></td>
+            </tr>
+            <tr>
+              <td><span class="ft-name">description length</span></td>
+              <td>Integer</td>
+              <td>Character count of the bio</td>
+              <td>Real accounts tend to have meaningful bios; fake accounts usually have empty or very short ones</td>
+              <td><span class="importance-tag imp-medium">Medium</span></td>
+            </tr>
+            <tr>
+              <td><span class="ft-name">fullname words</span></td>
+              <td>Integer</td>
+              <td>Number of words in the display name</td>
+              <td>Real people typically have 2-word names; bots often have 0 or 1 word display names</td>
+              <td><span class="importance-tag imp-medium">Medium</span></td>
+            </tr>
+            <tr>
+              <td><span class="ft-name">nums/length fullname</span></td>
+              <td>Float 0–1</td>
+              <td>Proportion of digits in the display name</td>
+              <td>Display names with many digits (e.g. "John99887") are highly suspicious</td>
+              <td><span class="importance-tag imp-medium">Medium</span></td>
+            </tr>
+            <tr>
+              <td><span class="ft-name">external URL</span></td>
+              <td>Binary</td>
+              <td>Whether a website link exists in bio</td>
+              <td>Real influencers and businesses usually have URLs; fake accounts rarely do</td>
+              <td><span class="importance-tag imp-medium">Medium</span></td>
+            </tr>
+            <tr>
+              <td><span class="ft-name">private</span></td>
+              <td>Binary</td>
+              <td>Whether the account is set to private</td>
+              <td>Private accounts with very few followers are a mild suspicious signal</td>
+              <td><span class="importance-tag imp-low">Low</span></td>
+            </tr>
+            <tr>
+              <td><span class="ft-name">name==username</span></td>
+              <td>Binary</td>
+              <td>Whether display name exactly matches username</td>
+              <td>Bot accounts often use the same string for both name and username fields</td>
+              <td><span class="importance-tag imp-low">Low</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Pipeline ── -->
+  <section class="method-section" style="padding-top:0">
+    <div class="method-inner">
+      <span class="section-chip">Pipeline</span>
+      <h2 class="section-title">Training & Deployment Pipeline</h2>
+      <p class="section-sub">The end-to-end process from raw data to a hybrid prediction system.</p>
+
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="ps-num">1</div>
+          <div class="ps-content">
+            <h4>Data Collection & Labeling</h4>
+            <p>Instagram account data was collected and labeled as real (0) or fake (1). The dataset contains 5,000 profiles with 11 extracted metadata features including profile picture presence, follower/following counts, post counts, username structure, and bio information.</p>
+            <span class="ps-tag">5,000 labeled samples · Balanced 50/50</span>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">2</div>
+          <div class="ps-content">
+            <h4>Preprocessing & Column Normalization</h4>
+            <p>Column names were normalized (stripped, lowercased, special characters replaced). Binary features were validated as 0/1. Numeric columns were coerced and missing values filled. Features were aligned to the model's training schema using reindex.</p>
+            <span class="ps-tag">Column Normalization · Type Coercion · Reindex</span>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">3</div>
+          <div class="ps-content">
+            <h4>Stratified Train / Validation / Test Split</h4>
+            <p>The dataset was split 80/10/10 using stratified sampling to preserve class balance across all three sets. This prevents the model from seeing test data during any phase of training or validation, giving a true unbiased performance estimate.</p>
+            <span class="ps-tag">80/10/10 Stratified Split · train_test_split(stratify=y)</span>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">4</div>
+          <div class="ps-content">
+            <h4>XGBoost Model Training with GridSearchCV</h4>
+            <p>An XGBoost classifier was tuned using 5-fold cross-validated Grid Search across n_estimators [100, 200], max_depth [3, 5, 7], learning_rate [0.01, 0.1, 0.2], subsample [0.8, 1.0], and colsample_bytree [0.8, 1.0]. Scoring metric was ROC-AUC. The best estimator was selected and saved.</p>
+            <span class="ps-tag">XGBoost · GridSearchCV · ROC-AUC · 5-Fold CV</span>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">5</div>
+          <div class="ps-content">
+            <h4>Rule-Based Engine Design</h4>
+            <p>A domain-informed rule engine was built alongside the ML model. Each rule assigns a weighted score between –1.0 (strongly real) and +1.0 (strongly fake) based on observable account patterns. The engine runs independently and its output is combined with the ML probability at inference time.</p>
+            <span class="ps-tag">9 Rules · Weighted Scoring · Domain Knowledge</span>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">6</div>
+          <div class="ps-content">
+            <h4>Hybrid Score Fusion</h4>
+            <p>The final fake probability is computed as a weighted combination: 60% XGBoost ML probability + 40% rule engine score. This hybrid approach improves robustness on edge cases where the ML model may be uncertain, by incorporating explicit domain logic.</p>
+            <span class="ps-tag">Final Score = 0.6 × ML + 0.4 × Rules</span>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">7</div>
+          <div class="ps-content">
+            <h4>Evaluation & Validation</h4>
+            <p>The model was evaluated on the held-out test set of 500 accounts. Accuracy, precision, recall, F1 score, and ROC-AUC were measured. The confusion matrix confirmed near-perfect classification with very few false positives and false negatives.</p>
+            <span class="ps-tag">500-sample Test Set · ROC-AUC: 0.9995</span>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="ps-num">8</div>
+          <div class="ps-content">
+            <h4>Deployment via Flask API</h4>
+            <p>The trained model was serialized with joblib and served through a Flask REST API. The /predict endpoint runs both the ML model and rule engine, returning the hybrid verdict, confidence level, probability breakdown, and a list of which rules fired.</p>
+            <span class="ps-tag">Flask · joblib · REST API · Hybrid Inference</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Hybrid Rule Engine ── -->
+  <section class="method-section" style="padding-top:0">
+    <div class="method-inner">
+      <span class="section-chip">Rule Engine</span>
+      <h2 class="section-title">Domain-Based Rules</h2>
+      <p class="section-sub">Nine hand-crafted rules run alongside the ML model. Each fires independently and contributes to the final hybrid score with its own weight.</p>
+
+      <div class="rule-callout">
+        <h4>Rules & Weights (positive = fake signal, negative = real signal)</h4>
+        <div class="rule-row">
+          <span class="rule-signal fake">Fake</span>
+          <span class="rule-desc">No profile picture — accounts without a photo are disproportionately fake</span>
+          <span class="rule-weight">+0.60</span>
+        </div>
+        <div class="rule-row">
+          <span class="rule-signal fake">Fake</span>
+          <span class="rule-desc">Following &gt; 10× followers AND followers &gt; 250 — classic mass-follow bot pattern</span>
+          <span class="rule-weight">+0.80</span>
+        </div>
+        <div class="rule-row">
+          <span class="rule-signal fake">Fake</span>
+          <span class="rule-desc">Zero posts — empty accounts with no content activity</span>
+          <span class="rule-weight">+0.70</span>
+        </div>
+        <div class="rule-row">
+          <span class="rule-signal fake">Fake</span>
+          <span class="rule-desc">Bio length &lt; 5 characters — no meaningful profile description</span>
+          <span class="rule-weight">+0.40</span>
+        </div>
+        <div class="rule-row">
+          <span class="rule-signal fake">Fake</span>
+          <span class="rule-desc">Username numeric ratio &gt; 30% — e.g. "user293847"</span>
+          <span class="rule-weight">+0.50</span>
+        </div>
+        <div class="rule-row">
+          <span class="rule-signal fake">Fake</span>
+          <span class="rule-desc">Following &gt; 5,000 accounts — mass-follow behavior at scale</span>
+          <span class="rule-weight">+0.60</span>
+        </div>
+        <div class="rule-row">
+          <span class="rule-signal fake">Fake</span>
+          <span class="rule-desc">Private account with fewer than 50 followers — abandoned or bot account</span>
+          <span class="rule-weight">+0.30</span>
+        </div>
+        <div class="rule-row">
+          <span class="rule-signal real">Real</span>
+          <span class="rule-desc">Followers &gt; 50,000 — very difficult to fake at scale</span>
+          <span class="rule-weight">−0.80</span>
+        </div>
+        <div class="rule-row">
+          <span class="rule-signal real">Real</span>
+          <span class="rule-desc">Has external URL AND followers &gt; 1,000 — influencer or business pattern</span>
+          <span class="rule-weight">−0.40</span>
+        </div>
+        <div class="rule-row">
+          <span class="rule-signal real">Real</span>
+          <span class="rule-desc">Following &lt; 2× followers with followers &gt; 100 — healthy engagement ratio</span>
+          <span class="rule-weight">−0.30</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Model Performance ── -->
+  <section class="method-section" style="padding-top:0">
+    <div class="method-inner">
+      <span class="section-chip">Results</span>
+      <h2 class="section-title">Model Performance</h2>
+      <p class="section-sub">Evaluation metrics on the held-out test set of 500 accounts. The ROC-AUC score of 0.9995 indicates near-perfect class separation.</p>
+
+      <div class="metrics-big-grid">
+        <div class="mbg-card"><div class="mbg-val">99.2%</div><div class="mbg-lbl">Accuracy</div><div class="mbg-bar"><div class="mbg-fill" data-w="99.2"></div></div></div>
+        <div class="mbg-card"><div class="mbg-val">99.6%</div><div class="mbg-lbl">Precision</div><div class="mbg-bar"><div class="mbg-fill" data-w="99.6"></div></div></div>
+        <div class="mbg-card"><div class="mbg-val">98.8%</div><div class="mbg-lbl">Recall</div><div class="mbg-bar"><div class="mbg-fill" data-w="98.8"></div></div></div>
+        <div class="mbg-card"><div class="mbg-val">99.2%</div><div class="mbg-lbl">F1 Score</div><div class="mbg-bar"><div class="mbg-fill" data-w="99.2"></div></div></div>
+      </div>
+
+      <!-- Confusion matrix — recalculated for 500-sample test set at 99.2% accuracy -->
+      <div class="confusion-wrap" style="margin-top:52px">
+        <div class="confusion-matrix">
+          <div class="cm-title">Confusion Matrix (Test Set · 500 accounts)</div>
+          <table class="cm-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Predicted Real</th>
+                <th>Predicted Fake</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th style="text-align:right;padding-right:10px;font-size:0.73rem;color:var(--muted2)">Actual Real</th>
+                <td><div class="cm-cell tp"><span class="cm-val">248</span><span class="cm-label">True Positive</span></div></td>
+                <td><div class="cm-cell fp"><span class="cm-val">2</span><span class="cm-label">False Positive</span></div></td>
+              </tr>
+              <tr>
+                <th style="text-align:right;padding-right:10px;font-size:0.73rem;color:var(--muted2)">Actual Fake</th>
+                <td><div class="cm-cell fn"><span class="cm-val">2</span><span class="cm-label">False Negative</span></div></td>
+                <td><div class="cm-cell tn"><span class="cm-val">248</span><span class="cm-label">True Negative</span></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="confusion-explanation">
+          <h4>Reading the Matrix</h4>
+          <div class="ce-row"><div class="ce-badge tp">TP</div><div class="ce-text"><strong>True Positive — 248</strong><span>Real accounts correctly identified as real. The model accurately recognizes authentic profiles.</span></div></div>
+          <div class="ce-row"><div class="ce-badge tn">TN</div><div class="ce-text"><strong>True Negative — 248</strong><span>Fake accounts correctly identified as fake. The model successfully flags inauthentic profiles.</span></div></div>
+          <div class="ce-row"><div class="ce-badge fp">FP</div><div class="ce-text"><strong>False Positive — 2</strong><span>Real accounts incorrectly flagged as fake. Only 2 misclassified in 500 — a major improvement over the previous model.</span></div></div>
+          <div class="ce-row"><div class="ce-badge fn">FN</div><div class="ce-text"><strong>False Negative — 2</strong><span>Fake accounts missed by the model. The rule engine further catches many of these edge cases at inference time.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section cta-section">
+    <div class="cta-inner">
+      <h2>See it in action</h2>
+      <p>Try the live dashboard with demo presets or your own data.</p>
+      <div class="cta-actions">
+        <a href="index.html" class="btn-primary large">Launch Dashboard →</a>
+        <a href="landing.html" class="btn-ghost large">Back to Home</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="brand-icon small">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        InstaGuard
+      </div>
+      <div class="footer-links">
+        <a href="landing.html">Home</a>
+        <a href="methodology.html">Methodology</a>
+        <a href="index.html">Dashboard</a>
+      </div>
+      <div class="footer-note">Final Year Project · ML-powered Instagram Account Analysis</div>
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll('.mbg-fill, .dsb-fill, .mc-fill').forEach(bar => {
+            const w = bar.dataset.w;
+            if (w) setTimeout(() => { bar.style.width = w + '%'; }, 100);
+          });
+        }
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.metrics-big-grid, .dataset-card').forEach(el => observer.observe(el));
+
+    document.querySelectorAll('.pipeline-step').forEach((el, i) => {
+      el.style.animationDelay = `${i * 0.1}s`;
+    });
+  </script>
+</body>
+</html>

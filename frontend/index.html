@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InstaGuard — Dashboard</title>
+  <link rel="icon" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Ambient background -->
+  <div class="ambient-bg">
+    <div class="grid-overlay"></div>
+    <div class="noise-overlay"></div>
+    <canvas id="particleCanvas"></canvas>
+  </div>
+
+  <!-- Top nav bar -->
+  <nav class="topnav">
+    <div class="topnav-brand">
+      <a href="landing.html" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        InstaGuard
+      </a>
+    </div>
+    <div class="topnav-center-links">
+      <a href="landing.html" class="topnav-link">Home</a>
+      <a href="methodology.html" class="topnav-link">Methodology</a>
+      <a href="index.html" class="topnav-link active">Dashboard</a>
+    </div>
+    <div class="topnav-links">
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span id="apiStatus">Connecting...</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+      <div class="sidebar-inner">
+        <div class="sidebar-header">
+          <h1>Account<br><em>Intelligence</em></h1>
+          <p class="sidebar-desc">ML-powered detection of inauthentic Instagram accounts using behavioral pattern analysis.</p>
+        </div>
+
+        <!-- Updated model stats: XGBoost, 11 features, 99.2% accuracy, Hybrid mode -->
+        <div class="model-stats-block">
+          <div class="block-label">Model Stats</div>
+          <div class="model-stats-grid">
+            <div class="mstat">
+              <div class="mstat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              <span class="mstat-val">99.2%</span>
+              <span class="mstat-lbl">Accuracy</span>
+            </div>
+            <div class="mstat">
+              <div class="mstat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+              <span class="mstat-val">11</span>
+              <span class="mstat-lbl">Features</span>
+            </div>
+            <div class="mstat">
+              <div class="mstat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+              <span class="mstat-val">XGB</span>
+              <span class="mstat-lbl">Model</span>
+            </div>
+            <div class="mstat">
+              <div class="mstat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+              <span class="mstat-val">Hybrid</span>
+              <span class="mstat-lbl">Engine</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session history -->
+        <div class="history-block">
+          <div class="block-label-row">
+            <div class="block-label">Session History</div>
+            <button class="clear-history-btn" id="clearHistory" title="Clear history">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+          <div class="history-list" id="historyList">
+            <div class="history-empty">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              <span>No predictions yet</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-footer-text">Built with Flask + XGBoost + Rule Engine</div>
+          <div class="sidebar-footer-links">
+            <a href="landing.html" class="sf-link">Home</a>
+            <span>·</span>
+            <a href="methodology.html" class="sf-link">Methodology</a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+      <!-- Mode tabs -->
+      <div class="mode-tabs">
+        <button class="tab-btn active" id="manualTab" data-mode="manual">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Manual Input
+        </button>
+        <button class="tab-btn" id="bulkTab" data-mode="bulk">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Bulk Upload
+        </button>
+      </div>
+
+      <!-- ===== MANUAL PANEL ===== -->
+      <div class="panel-wrap" id="manualPanel">
+
+        <!-- Profile preview card -->
+        <div class="profile-preview-card" id="profilePreview">
+          <div class="profile-preview-avatar" id="previewAvatar">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="profile-preview-info">
+            <div class="profile-preview-name" id="previewName">@username</div>
+            <div class="profile-preview-bio" id="previewBio">Bio will appear here...</div>
+            <div class="profile-preview-stats">
+              <div class="ps"><span id="previewPosts">0</span><small>Posts</small></div>
+              <div class="ps"><span id="previewFollowers">0</span><small>Followers</small></div>
+              <div class="ps"><span id="previewFollowing">0</span><small>Following</small></div>
+            </div>
+          </div>
+          <div class="profile-preview-badge" id="previewBadge"><span>?</span></div>
+        </div>
+
+        <!-- Demo Presets -->
+        <div class="demo-presets-bar" id="demoPresetsBar">
+          <div class="demo-presets-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Try a demo
+          </div>
+          <div class="demo-preset-btns">
+            <button class="demo-btn bot" onclick="loadPreset('bot')">
+              <span class="demo-btn-dot"></span>
+              Bot Account
+            </button>
+            <button class="demo-btn real" onclick="loadPreset('real')">
+              <span class="demo-btn-dot"></span>
+              Real Account
+            </button>
+            <button class="demo-btn edge" onclick="loadPreset('edge')">
+              <span class="demo-btn-dot"></span>
+              Edge Case
+            </button>
+          </div>
+        </div>
+
+        <!-- Username fetch bar -->
+        <div class="username-fetch-bar" id="usernameFetchBar">
+          <div class="ufb-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            AI Feature Estimator
+          </div>
+          <div class="ufb-input-wrap">
+            <span class="ufb-at">@</span>
+            <input type="text" id="usernameInput" placeholder="Enter any Instagram username..." class="ufb-input" maxlength="50" />
+          </div>
+          <button class="ufb-btn" id="fetchUsernameBtn" onclick="fetchUsername()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
+            Estimate Features
+          </button>
+          <div class="ufb-hint">AI will estimate realistic feature values from the username pattern</div>
+        </div>
+
+        <!-- ===== INPUT FORM ===== -->
+        <div class="input-card">
+          <div class="input-card-header">
+            <h2>Account Features</h2>
+            <button class="reset-btn" id="resetForm" title="Reset all fields">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+              Reset
+            </button>
+          </div>
+
+          <div class="form-grid">
+
+            <!-- ── SECTION: Profile Identity ── -->
+            <div class="section-divider">Profile Identity</div>
+
+            <!-- Profile Picture (toggle) -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label>Profile Picture</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Does the account have a profile photo? Fake accounts very commonly have no profile picture — one of the strongest fake signals.</div></div>
+              </div>
+              <label class="toggle-field-wrap" for="profile_pic">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="profile_pic" onchange="updateToggleBadge(this); updatePreview()" />
+                  <span class="toggle-slider"></span>
+                </div>
+                <span class="toggle-label-text">
+                  <strong id="profile_pic_label">No profile picture</strong>
+                  Toggle on if the account has a photo
+                </span>
+                <span class="toggle-state-badge" id="profile_pic_badge">OFF</span>
+              </label>
+            </div>
+
+            <!-- Private Account (toggle) -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label>Private Account</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Is this account set to private? Private accounts with very few followers can be a suspicious signal.</div></div>
+              </div>
+              <label class="toggle-field-wrap" for="private">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="private" onchange="updateToggleBadge(this)" />
+                  <span class="toggle-slider"></span>
+                </div>
+                <span class="toggle-label-text">
+                  <strong id="private_label">Public account</strong>
+                  Toggle on if the account is private
+                </span>
+                <span class="toggle-state-badge" id="private_badge">OFF</span>
+              </label>
+            </div>
+
+            <!-- External URL (toggle) -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label>External URL in Bio</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Does the bio contain a website link? Real influencers and businesses usually have an external URL; bots usually don't.</div></div>
+              </div>
+              <label class="toggle-field-wrap" for="external_url">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="external_url" onchange="updateToggleBadge(this)" />
+                  <span class="toggle-slider"></span>
+                </div>
+                <span class="toggle-label-text">
+                  <strong id="external_url_label">No external URL</strong>
+                  Toggle on if there is a website link
+                </span>
+                <span class="toggle-state-badge" id="external_url_badge">OFF</span>
+              </label>
+            </div>
+
+            <!-- Name == Username (toggle) -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label>Name Matches Username</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Is the display name exactly the same as the username? e.g. username "john_doe" and display name "john_doe". This is a mild fake signal.</div></div>
+              </div>
+              <label class="toggle-field-wrap" for="name_eq_username">
+                <div class="toggle-switch">
+                  <input type="checkbox" id="name_eq_username" onchange="updateToggleBadge(this)" />
+                  <span class="toggle-slider"></span>
+                </div>
+                <span class="toggle-label-text">
+                  <strong id="name_eq_username_label">Name differs from username</strong>
+                  Toggle on if they are identical
+                </span>
+                <span class="toggle-state-badge" id="name_eq_username_badge">OFF</span>
+              </label>
+            </div>
+
+            <!-- ── SECTION: Activity Stats ── -->
+            <div class="section-divider">Activity Stats</div>
+
+            <!-- Followers -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label for="followers">Followers</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Number of people following this account. Fake accounts often have very few or suspiciously round numbers.</div></div>
+              </div>
+              <div class="field-input-wrap" id="wrap_followers">
+                <input type="number" id="followers" placeholder="e.g. 300" min="0" oninput="validateField(this); updatePreview()" />
+                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+              </div>
+              <span class="field-feedback" id="fb_followers"></span>
+            </div>
+
+            <!-- Following -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label for="following">Following</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Number of accounts this user follows. A very high following count with few followers is a red flag.</div></div>
+              </div>
+              <div class="field-input-wrap" id="wrap_following">
+                <input type="number" id="following" placeholder="e.g. 180" min="0" oninput="validateField(this); updatePreview()" />
+                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></span>
+              </div>
+              <span class="field-feedback" id="fb_following"></span>
+            </div>
+
+            <!-- Posts -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label for="posts">Posts</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Total number of posts. Fake accounts typically have 0 or very few posts.</div></div>
+              </div>
+              <div class="field-input-wrap" id="wrap_posts">
+                <input type="number" id="posts" placeholder="e.g. 120" min="0" oninput="validateField(this); updatePreview()" />
+                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
+              </div>
+              <span class="field-feedback" id="fb_posts"></span>
+            </div>
+
+            <!-- Description Length -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label for="description_length">Bio Length (characters)</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Character count of the profile bio. Real accounts often have meaningful bios; fake ones usually don't. Count the characters in their bio.</div></div>
+              </div>
+              <div class="field-input-wrap" id="wrap_description_length">
+                <input type="number" id="description_length" placeholder="e.g. 50" min="0" max="150" oninput="validateField(this); updatePreview()" />
+                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></span>
+              </div>
+              <span class="field-feedback" id="fb_description_length"></span>
+            </div>
+
+            <!-- ── SECTION: Name Analysis ── -->
+            <div class="section-divider">Name Analysis</div>
+
+            <!-- Full Name Words -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label for="fullname_words">Full Name Word Count</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Number of words in the display name. e.g. "John Smith" = 2, "johnsmith99" = 1. Real people usually have 2+ words.</div></div>
+              </div>
+              <div class="field-input-wrap" id="wrap_fullname_words">
+                <input type="number" id="fullname_words" placeholder="e.g. 2" min="0" max="10" oninput="validateField(this)" />
+                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>
+              </div>
+              <span class="field-feedback" id="fb_fullname_words"></span>
+            </div>
+
+            <!-- Nums/Length Username -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label for="nums_length_username">Username Numeric Ratio</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Proportion of digits in the username (0–1). e.g. "user1234" has 4 digits out of 8 characters = 0.50. Bots often have highly numeric usernames.</div></div>
+              </div>
+              <div class="field-input-wrap" id="wrap_nums_length_username">
+                <input type="number" id="nums_length_username" placeholder="e.g. 0.27" min="0" max="1" step="0.01" oninput="validateRatio(this)" />
+                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></span>
+              </div>
+              <span class="field-feedback" id="fb_nums_length_username"></span>
+            </div>
+
+            <!-- Nums/Length Fullname -->
+            <div class="field-group">
+              <div class="field-label-row">
+                <label for="nums_length_fullname">Full Name Numeric Ratio</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Proportion of digits in the full display name (0–1). e.g. "John99" = 2 digits out of 6 chars = 0.33. Real names rarely have numbers.</div></div>
+              </div>
+              <div class="field-input-wrap" id="wrap_nums_length_fullname">
+                <input type="number" id="nums_length_fullname" placeholder="e.g. 0.0" min="0" max="1" step="0.01" oninput="validateRatio(this)" />
+                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></span>
+              </div>
+              <span class="field-feedback" id="fb_nums_length_fullname"></span>
+            </div>
+
+          </div><!-- /form-grid -->
+
+          <button class="predict-btn" id="predictManualBtn" onclick="predictManual()">
+            <span class="predict-btn-inner">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
+              Analyze Account
+            </span>
+          </button>
+        </div>
+
+        <!-- Result area -->
+        <div id="manualResultArea">
+          <div class="skeleton-card hidden" id="manualSkeleton">
+            <div class="sk-line sk-title"></div>
+            <div class="sk-line sk-sub"></div>
+            <div class="sk-bar"></div>
+            <div class="sk-line sk-thin"></div>
+          </div>
+
+          <div class="result-card hidden" id="manualResultCard">
+            <div class="result-header">
+              <div class="result-icon-wrap" id="resultIconWrap">
+                <svg class="result-icon" id="resultIcon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"></svg>
+              </div>
+              <div class="result-title-block">
+                <p class="result-eyebrow">Prediction Result</p>
+                <h3 class="result-label-text" id="resultLabelText">—</h3>
+              </div>
+              <div class="result-badge" id="resultBadge">—</div>
+            </div>
+
+            <div class="gauge-section">
+              <div class="gauge-wrap">
+                <canvas id="gaugeCanvas" width="180" height="100"></canvas>
+                <div class="gauge-center-text">
+                  <span class="gauge-pct" id="gaugePct">0%</span>
+                  <span class="gauge-lbl" id="gaugeLevel">—</span>
+                </div>
+              </div>
+              <div class="gauge-legend">
+                <div class="gauge-legend-item"><span class="gl-dot real"></span> Real <strong id="probReal">—</strong></div>
+                <div class="gauge-legend-item"><span class="gl-dot fake"></span> Fake <strong id="probFake">—</strong></div>
+              </div>
+            </div>
+
+            <!-- Feature importance -->
+            <div class="feature-importance-section">
+              <div class="section-label">Feature Influence</div>
+              <div class="feature-bars" id="featureBars"></div>
+            </div>
+
+            <!-- Plain-English Explanation -->
+            <div class="explanation-card" id="explanationCard">
+              <div class="explanation-header">
+                <div class="explanation-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                </div>
+                <span class="explanation-title">Why this prediction?</span>
+              </div>
+              <p class="explanation-text" id="explanationText"></p>
+              <div class="explanation-flags" id="explanationFlags"></div>
+            </div>
+
+            <!-- ── NEW: Hybrid Engine Breakdown ── -->
+            <div class="hybrid-breakdown" id="hybridBreakdown" style="display:none;">
+              <div class="hybrid-breakdown-title">Hybrid Engine Breakdown</div>
+
+              <div class="hybrid-row">
+                <span class="hybrid-row-label">ML Model (60%)</span>
+                <div class="hybrid-bar-track">
+                  <div class="hybrid-bar-fill ml" id="hybridBarML" style="width:0%"></div>
+                </div>
+                <span class="hybrid-row-val" id="hybridValML">—</span>
+              </div>
+
+              <div class="hybrid-row">
+                <span class="hybrid-row-label">Rule Engine (40%)</span>
+                <div class="hybrid-bar-track">
+                  <div class="hybrid-bar-fill rules" id="hybridBarRules" style="width:0%"></div>
+                </div>
+                <span class="hybrid-row-val" id="hybridValRules">—</span>
+              </div>
+
+              <div class="hybrid-row">
+                <span class="hybrid-row-label">Final Score</span>
+                <div class="hybrid-bar-track">
+                  <div class="hybrid-bar-fill final" id="hybridBarFinal" style="width:0%"></div>
+                </div>
+                <span class="hybrid-row-val" id="hybridValFinal">—</span>
+              </div>
+
+              <!-- Rules that fired -->
+              <div class="rules-fired-list" id="rulesFiredList"></div>
+            </div>
+
+          </div><!-- /result-card -->
+
+          <div class="error-card hidden" id="manualError">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="manualErrorText"></span>
+          </div>
+        </div>
+
+      </div><!-- /manualPanel -->
+
+      <!-- ===== BULK PANEL ===== -->
+      <div class="panel-wrap hidden" id="bulkPanel">
+        <div class="upload-card">
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="fileInput" accept=".csv,.json" />
+            <div class="upload-zone-inner" id="uploadZoneInner">
+              <div class="upload-icon-wrap">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <p class="upload-title">Drop your file here</p>
+              <p class="upload-sub">or <span class="upload-browse">browse</span> to upload</p>
+              <p class="upload-formats">CSV or JSON · Max 10MB · Use new 11-feature format</p>
+            </div>
+            <div class="upload-file-selected hidden" id="fileSelectedInfo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span id="selectedFileName">No file</span>
+              <button class="remove-file-btn" id="removeFileBtn">✕</button>
+            </div>
+          </div>
+
+          <!-- CSV column reference for new format -->
+          <div style="margin: 10px 0 0; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6;">
+            <strong style="color:rgba(255,255,255,0.6);">Expected CSV columns:</strong><br>
+            profile pic, nums/length username, fullname words, nums/length fullname, name==username, description length, external URL, private, #posts, #followers, #follows
+          </div>
+
+          <button class="predict-btn" id="predictBulkBtn" onclick="predictFile()">
+            <span class="predict-btn-inner">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload & Analyze
+            </span>
+          </button>
+        </div>
+
+        <div class="skeleton-card hidden" id="bulkSkeleton">
+          <div class="sk-line sk-title"></div>
+          <div class="sk-grid"><div class="sk-stat-box"></div><div class="sk-stat-box"></div><div class="sk-stat-box"></div></div>
+          <div class="sk-line sk-sub"></div>
+          <div class="sk-line sk-sub" style="width:70%"></div>
+        </div>
+
+        <div class="bulk-result-wrap hidden" id="bulkResults">
+          <div class="bulk-summary-strip">
+            <div class="bss-item total"><span class="bss-val" id="bssTotal">0</span><span class="bss-lbl">Total</span></div>
+            <div class="bss-divider"></div>
+            <div class="bss-item real"><span class="bss-val" id="bssReal">0</span><span class="bss-lbl">Real</span></div>
+            <div class="bss-divider"></div>
+            <div class="bss-item fake"><span class="bss-val" id="bssFake">0</span><span class="bss-lbl">Fake</span></div>
+            <div class="bss-divider"></div>
+            <div class="bss-item conf"><span class="bss-val" id="bssConf">—</span><span class="bss-lbl">Avg Confidence</span></div>
+            <button class="export-btn" id="exportBtn" onclick="exportResults()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </button>
+          </div>
+          <div class="split-bar-wrap">
+            <div class="split-bar"><div class="split-real" id="splitReal"></div><div class="split-fake" id="splitFake"></div></div>
+            <div class="split-legend">
+              <span><span class="sl-dot real"></span> Real accounts</span>
+              <span><span class="sl-dot fake"></span> Fake accounts</span>
+            </div>
+          </div>
+          <div class="table-header-row">
+            <h3>Predictions Table</h3>
+            <div class="table-filter">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="real">Real</button>
+              <button class="filter-btn" data-filter="fake">Fake</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="predictions-table" id="predictionsTable">
+              <thead><tr><th>#</th><th>Verdict</th><th>Confidence</th><th>Real %</th><th>Fake %</th><th>Level</th></tr></thead>
+              <tbody id="predictionsBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+
+        <div class="error-card hidden" id="bulkError">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="bulkErrorText"></span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // ── Toggle badge helper ──
+    function updateToggleBadge(checkbox) {
+      const id = checkbox.id;
+      const badge = document.getElementById(id + '_badge');
+      const label = document.getElementById(id + '_label');
+
+      const labels = {
+        profile_pic:      ['No profile picture',       'Has profile picture'],
+        private:          ['Public account',            'Private account'],
+        external_url:     ['No external URL',           'Has external URL'],
+        name_eq_username: ['Name differs from username','Name equals username'],
+      };
+
+      if (badge) {
+        badge.textContent = checkbox.checked ? 'ON' : 'OFF';
+        badge.classList.toggle('on', checkbox.checked);
+      }
+      if (label && labels[id]) {
+        label.textContent = checkbox.checked ? labels[id][1] : labels[id][0];
+      }
+    }
+
+    // ── Build payload matching backend's expected column names ──
+    function buildPayload() {
+      return {
+        "profile pic":            document.getElementById('profile_pic').checked ? 1 : 0,
+        "nums/length username":   parseFloat(document.getElementById('nums_length_username').value) || 0,
+        "fullname words":         parseFloat(document.getElementById('fullname_words').value) || 0,
+        "nums/length fullname":   parseFloat(document.getElementById('nums_length_fullname').value) || 0,
+        "name==username":         document.getElementById('name_eq_username').checked ? 1 : 0,
+        "description length":     parseFloat(document.getElementById('description_length').value) || 0,
+        "external URL":           document.getElementById('external_url').checked ? 1 : 0,
+        "private":                document.getElementById('private').checked ? 1 : 0,
+        "#posts":                 parseFloat(document.getElementById('posts').value) || 0,
+        "#followers":             parseFloat(document.getElementById('followers').value) || 0,
+        "#follows":               parseFloat(document.getElementById('following').value) || 0,
+      };
+    }
+
+    // ── Render hybrid breakdown if backend returns it ──
+    function renderHybridBreakdown(breakdown) {
+      const el = document.getElementById('hybridBreakdown');
+      if (!breakdown || !el) return;
+      el.style.display = 'block';
+
+      const mlPct    = Math.round((breakdown.ml?.fake_probability || 0) * 100);
+      const rulePct  = Math.round((breakdown.rules?.score || 0) * 100);
+      const finalPct = Math.round(
+        ((breakdown.ml?.fake_probability || 0) * 0.6 +
+         (breakdown.rules?.score || 0) * 0.4) * 100
+      );
+
+      document.getElementById('hybridBarML').style.width    = mlPct + '%';
+      document.getElementById('hybridValML').textContent    = mlPct + '%';
+      document.getElementById('hybridBarRules').style.width = rulePct + '%';
+      document.getElementById('hybridValRules').textContent = rulePct + '%';
+      document.getElementById('hybridBarFinal').style.width = finalPct + '%';
+      document.getElementById('hybridValFinal').textContent = finalPct + '%';
+
+      const list = document.getElementById('rulesFiredList');
+      list.innerHTML = '';
+      const rules = breakdown.rules?.rules_fired || [];
+      if (rules.length === 0) {
+        list.innerHTML = '<span style="font-size:12px;color:rgba(255,255,255,0.3);">No rules triggered</span>';
+      } else {
+        rules.forEach(r => {
+          const item = document.createElement('div');
+          item.className = 'rule-fired-item';
+          item.innerHTML = `<span class="rule-dot ${r.signal}"></span>${r.rule} <span style="margin-left:auto;opacity:0.4">${r.signal}</span>`;
+          list.appendChild(item);
+        });
+      }
+    }
+
+    // ── Demo presets updated for new feature set ──
+    function loadPreset(type) {
+      const presets = {
+        bot: {
+          profile_pic: false, private: false, external_url: false, name_eq_username: true,
+          followers: 12, following: 3400, posts: 0,
+          description_length: 0, fullname_words: 0,
+          nums_length_username: 0.62, nums_length_fullname: 0.0
+        },
+        real: {
+          profile_pic: true, private: false, external_url: true, name_eq_username: false,
+          followers: 4800, following: 320, posts: 287,
+          description_length: 72, fullname_words: 2,
+          nums_length_username: 0.0, nums_length_fullname: 0.0
+        },
+        edge: {
+          profile_pic: true, private: true, external_url: false, name_eq_username: false,
+          followers: 180, following: 950, posts: 14,
+          description_length: 18, fullname_words: 1,
+          nums_length_username: 0.22, nums_length_fullname: 0.0
+        }
+      };
+
+      const p = presets[type];
+      if (!p) return;
+
+      // Set toggles
+      ['profile_pic','private','external_url','name_eq_username'].forEach(id => {
+        const cb = document.getElementById(id);
+        if (cb) { cb.checked = p[id]; updateToggleBadge(cb); }
+      });
+
+      // Set number fields
+      const map = {
+        followers: 'followers', following: 'following', posts: 'posts',
+        description_length: 'description_length', fullname_words: 'fullname_words',
+        nums_length_username: 'nums_length_username', nums_length_fullname: 'nums_length_fullname'
+      };
+      Object.entries(map).forEach(([key, elId]) => {
+        const el = document.getElementById(elId);
+        if (el) el.value = p[key];
+      });
+
+      if (typeof updatePreview === 'function') updatePreview();
+    }
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
