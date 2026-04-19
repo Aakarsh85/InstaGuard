@@ -1,4 +1,4 @@
-//C:\Users\acer\Desktop\pj\Final Year Project\frontend\script.js
+//C:\Users\acer\Desktop\new pj\Final year project\frontend\script.js
 // ============================================================
 //  InstaGuard — script.js  (updated for new 11-feature model)
 //  Features: history replay, demo presets, AI username fetch,
@@ -6,7 +6,7 @@
 //            hybrid engine breakdown
 // ============================================================
 
-const API_BASE = "https://instafake-backend-4tmw.onrender.com";
+const API_BASE = "https://instaguard-backend.onrender.com";
 
 // ── DOM refs ──────────────────────────────────────────────
 const manualTab        = document.getElementById("manualTab");
