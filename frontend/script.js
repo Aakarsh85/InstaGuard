@@ -1,4 +1,4 @@
-//C:\Users\acer\Desktop\new pj\Final year project\frontend\script.js
+//C:\Users\acer\Desktop\pj\Final Year Project\frontend\script.js
 // ============================================================
 //  InstaGuard — script.js  (updated for new 11-feature model)
 //  Features: history replay, demo presets, AI username fetch,
@@ -6,7 +6,7 @@
 //            hybrid engine breakdown
 // ============================================================
 
-const API_BASE = "https://instaguard-backend-2ldg.onrender.com/";
+const API_BASE = "https://instafake-backend-4tmw.onrender.com";
 
 // ── DOM refs ──────────────────────────────────────────────
 const manualTab        = document.getElementById("manualTab");
@@ -575,10 +575,13 @@ function renderManualResult(result, payload) {
 
   const badge = document.getElementById("resultBadge");
   if (badge) {
-    if (level === "High" && isFake)  { badge.className = "result-badge fake"; badge.textContent = "High Risk"; }
-    else if (level === "High")       { badge.className = "result-badge real"; badge.textContent = "Verified Real"; }
-    else if (level === "Medium")     { badge.className = "result-badge warn"; badge.textContent = "Medium Confidence"; }
-    else                             { badge.className = "result-badge";      badge.textContent = level; }
+    if      (level === "High"   && isFake)  { badge.className = "result-badge fake"; badge.textContent = "High Risk"; }
+    else if (level === "High"   && !isFake) { badge.className = "result-badge real"; badge.textContent = "Verified Real"; }
+    else if (level === "Medium" && isFake)  { badge.className = "result-badge warn"; badge.textContent = "Medium Risk"; }
+    else if (level === "Medium" && !isFake) { badge.className = "result-badge real"; badge.textContent = "Likely Real"; }
+    else if (level === "Low"    && isFake)  { badge.className = "result-badge warn"; badge.textContent = "Low Risk"; }
+    else if (level === "Low"    && !isFake) { badge.className = "result-badge real"; badge.textContent = "Probably Real"; }
+    else                                    { badge.className = "result-badge";      badge.textContent = level; }
   }
 
   const card = document.getElementById("manualResultCard");
@@ -1020,6 +1023,195 @@ function fmt(n) {
   if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
   return String(n);
 }
+
+// ── Code added from index.html ─────────────────────────────
+// =============================================================
+//  CODE EXTRACTED FROM index.html <script> BLOCK
+//  Paste this into script.js.
+//  Recommended position: BEFORE the "── Expose globals ──" block
+//  at the very bottom of script.js, so these functions are
+//  available when script.js calls them via window.loadPreset etc.
+// =============================================================
+
+
+// ── TOGGLE BADGE HELPER ──────────────────────────────────────
+// Called by onchange="updateToggleBadge(this)" on every toggle
+// checkbox in index.html. Updates the ON/OFF badge pill and the
+// short status label text inside each toggle row.
+function updateToggleBadge(checkbox) {
+  const id    = checkbox.id;
+  const badge = document.getElementById(id + '_badge');
+  const label = document.getElementById(id + '_label');
+
+  // OFF label → ON label for each toggle
+  const labels = {
+    profile_pic:      ['No profile picture', 'Has profile picture'],
+    private:          ['Public account',     'Private account'],
+    external_url:     ['No external URL',    'Has external URL'],
+    name_eq_username: ['Name ≠ Username',    'Name = Username'],
+  };
+
+  if (badge) {
+    badge.textContent = checkbox.checked ? 'ON' : 'OFF';
+    badge.classList.toggle('on', checkbox.checked);   // applies purple tint when ON
+  }
+  if (label && labels[id]) {
+    label.textContent = checkbox.checked ? labels[id][1] : labels[id][0];
+  }
+}
+
+
+// ── BUILD PAYLOAD ────────────────────────────────────────────
+// Reads every form field and returns an object whose keys exactly
+// match the column names the Flask backend / model expects.
+// Called inside predictManual() in script.js as:  const payload = buildPayload();
+function buildPayload() {
+  return {
+    // Binary toggles — 1 if checked, 0 if not
+    "profile pic":          document.getElementById('profile_pic').checked ? 1 : 0,
+    "external URL":         document.getElementById('external_url').checked ? 1 : 0,
+    "private":              document.getElementById('private').checked ? 1 : 0,
+    "name==username":       document.getElementById('name_eq_username').checked ? 1 : 0,
+
+    // Numeric ratio fields (0.0 – 1.0)
+    "nums/length username": parseFloat(document.getElementById('nums_length_username').value) || 0,
+    "nums/length fullname": parseFloat(document.getElementById('nums_length_fullname').value) || 0,
+
+    // Numeric count fields
+    "fullname words":       parseFloat(document.getElementById('fullname_words').value)    || 0,
+    "description length":   parseFloat(document.getElementById('description_length').value) || 0,
+    "#posts":               parseFloat(document.getElementById('posts').value)              || 0,
+    "#followers":           parseFloat(document.getElementById('followers').value)          || 0,
+    "#follows":             parseFloat(document.getElementById('following').value)          || 0,
+  };
+}
+
+
+// ── RENDER HYBRID ENGINE BREAKDOWN ───────────────────────────
+// Called inside renderManualResult() in script.js after a
+// prediction response comes back from the backend.
+// Populates the three animated bar rows (ML, Rules, Final)
+// and the list of rules that actually fired.
+function renderHybridBreakdown(breakdown) {
+  const el = document.getElementById('hybridBreakdown');
+  if (!breakdown || !el) return;
+  el.style.display = 'block';
+
+  // Convert 0-1 probabilities to integer percentages for display
+  const mlPct    = Math.round((breakdown.ml?.fake_probability || 0) * 100);
+  const rulePct  = Math.round((breakdown.rules?.score        || 0) * 100);
+  const finalPct = Math.round(
+    ((breakdown.ml?.fake_probability || 0) * 0.6 +   // 60% ML weight
+     (breakdown.rules?.score         || 0) * 0.4)    // 40% rules weight
+    * 100
+  );
+
+  // Animate the three progress bars
+  document.getElementById('hybridBarML').style.width    = mlPct    + '%';
+  document.getElementById('hybridValML').textContent    = mlPct    + '%';
+  document.getElementById('hybridBarRules').style.width = rulePct  + '%';
+  document.getElementById('hybridValRules').textContent = rulePct  + '%';
+  document.getElementById('hybridBarFinal').style.width = finalPct + '%';
+  document.getElementById('hybridValFinal').textContent = finalPct + '%';
+
+  // Render fired rules list
+  const list  = document.getElementById('rulesFiredList');
+  list.innerHTML = '';
+  const rules = breakdown.rules?.rules_fired || [];
+
+  if (rules.length === 0) {
+    list.innerHTML = '<span style="font-size:12px;color:rgba(255,255,255,0.3);">No rules triggered</span>';
+  } else {
+    rules.forEach(r => {
+      const item = document.createElement('div');
+      item.className = 'rule-fired-item';
+      // Green dot for real signal, red dot for fake signal
+      item.innerHTML = `
+        <span class="rule-dot ${r.signal}"></span>
+        ${r.rule}
+        <span style="margin-left:auto;opacity:0.4;font-size:11px;">${r.signal}</span>`;
+      list.appendChild(item);
+    });
+  }
+}
+
+
+// ── DEMO PRESET LOADER ───────────────────────────────────────
+// Called by onclick="loadPreset('bot'|'real'|'edge')" on the
+// three demo buttons in index.html.
+// 1. Fills all form fields with preset values.
+// 2. Fires predictManual() automatically after 150ms so the
+//    user sees the result without having to click Analyze Account.
+function loadPreset(type) {
+  const presets = {
+    // Classic bot: no pic, mass following, zero posts, numeric username
+    bot: {
+      profile_pic: false, private: false, external_url: false, name_eq_username: true,
+      followers: 12, following: 3400, posts: 0,
+      description_length: 0, fullname_words: 0,
+      nums_length_username: 0.62, nums_length_fullname: 0.0
+    },
+    // Typical real account: has pic, URL, normal ratio
+    real: {
+      profile_pic: true, private: false, external_url: true, name_eq_username: false,
+      followers: 4800, following: 320, posts: 287,
+      description_length: 72, fullname_words: 2,
+      nums_length_username: 0.0, nums_length_fullname: 0.0
+    },
+    // Ambiguous edge case: has pic but private, low followers, some numbers
+    edge: {
+      profile_pic: true, private: true, external_url: false, name_eq_username: false,
+      followers: 180, following: 950, posts: 14,
+      description_length: 18, fullname_words: 1,
+      nums_length_username: 0.22, nums_length_fullname: 0.0
+    }
+  };
+
+  const p = presets[type];
+  if (!p) return;
+
+  // Set the 4 toggle checkboxes and refresh their badge labels
+  ['profile_pic', 'private', 'external_url', 'name_eq_username'].forEach(id => {
+    const cb = document.getElementById(id);
+    if (cb) {
+      cb.checked = p[id];
+      updateToggleBadge(cb);   // keeps the ON/OFF pill + label text in sync
+    }
+  });
+
+  // Set the 7 numeric inputs
+  const numMap = {
+    followers:            'followers',
+    following:            'following',
+    posts:                'posts',
+    description_length:   'description_length',
+    fullname_words:       'fullname_words',
+    nums_length_username: 'nums_length_username',
+    nums_length_fullname: 'nums_length_fullname',
+  };
+  Object.entries(numMap).forEach(([key, elId]) => {
+    const el = document.getElementById(elId);
+    if (el) el.value = p[key];
+  });
+
+  // Refresh the live profile preview card
+  if (typeof updatePreview === 'function') updatePreview();
+
+  // Auto-run prediction — short delay lets the DOM fields settle visually first
+  setTimeout(() => {
+    if (typeof predictManual === 'function') predictManual();
+  }, 150);
+}
+
+
+// ── EXPOSE TO GLOBAL SCOPE ───────────────────────────────────
+// These are called from inline HTML attributes (onclick, onchange)
+// so they must be on window. Add these lines alongside the existing
+// window.* assignments at the bottom of script.js.
+window.updateToggleBadge  = updateToggleBadge;
+window.buildPayload       = buildPayload;
+window.renderHybridBreakdown = renderHybridBreakdown;
+window.loadPreset         = loadPreset;
 
 // ── Expose globals ─────────────────────────────────────────
 window.predictManual   = predictManual;
