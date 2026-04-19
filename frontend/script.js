@@ -6,7 +6,7 @@
 //            hybrid engine breakdown
 // ============================================================
 
-const API_BASE = "https://instaguard-backend.onrender.com";
+const API_BASE = "https://instaguard-backend-2ldg.onrender.com/";
 
 // ── DOM refs ──────────────────────────────────────────────
 const manualTab        = document.getElementById("manualTab");
