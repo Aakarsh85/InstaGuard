@@ -52,8 +52,8 @@
     </div>
     <h1 class="hero-title">How InstaGuard<br><em>actually works</em></h1>
     <p class="hero-desc" style="margin-top:18px">
-      A deep dive into the dataset, feature engineering, XGBoost model training, hybrid rule engine,
-      and performance metrics behind the fake account detection system.
+      A deep dive into the dataset, feature engineering, XGBoost model training, and performance
+      metrics behind the fake account detection system.
     </p>
   </div>
 
@@ -122,7 +122,7 @@
     <div class="method-inner">
       <span class="section-chip">Feature Engineering</span>
       <h2 class="section-title">The 11 Features</h2>
-      <p class="section-sub">Each feature was selected based on its correlation with inauthentic account behavior. The new model adds 4 binary features — profile picture, private status, external URL, and name-username match — which are among the strongest fake signals.</p>
+      <p class="section-sub">Each feature was selected based on its correlation with inauthentic account behavior. The model uses 4 binary features — profile picture, private status, external URL, and name-username match — which are among the strongest fake signals.</p>
 
       <div class="feature-table-wrap">
         <table class="feature-table">
@@ -224,7 +224,7 @@
     <div class="method-inner">
       <span class="section-chip">Pipeline</span>
       <h2 class="section-title">Training & Deployment Pipeline</h2>
-      <p class="section-sub">The end-to-end process from raw data to a hybrid prediction system.</p>
+      <p class="section-sub">The end-to-end process from raw data to a ML prediction system.</p>
 
       <div class="pipeline">
         <div class="pipeline-step">
@@ -262,97 +262,18 @@
         <div class="pipeline-step">
           <div class="ps-num">5</div>
           <div class="ps-content">
-            <h4>Rule-Based Engine Design</h4>
-            <p>A domain-informed rule engine was built alongside the ML model. Each rule assigns a weighted score between –1.0 (strongly real) and +1.0 (strongly fake) based on observable account patterns. The engine runs independently and its output is combined with the ML probability at inference time.</p>
-            <span class="ps-tag">9 Rules · Weighted Scoring · Domain Knowledge</span>
-          </div>
-        </div>
-        <div class="pipeline-step">
-          <div class="ps-num">6</div>
-          <div class="ps-content">
-            <h4>Hybrid Score Fusion</h4>
-            <p>The final fake probability is computed as a weighted combination: 60% XGBoost ML probability + 40% rule engine score. This hybrid approach improves robustness on edge cases where the ML model may be uncertain, by incorporating explicit domain logic.</p>
-            <span class="ps-tag">Final Score = 0.6 × ML + 0.4 × Rules</span>
-          </div>
-        </div>
-        <div class="pipeline-step">
-          <div class="ps-num">7</div>
-          <div class="ps-content">
             <h4>Evaluation & Validation</h4>
             <p>The model was evaluated on the held-out test set of 500 accounts. Accuracy, precision, recall, F1 score, and ROC-AUC were measured. The confusion matrix confirmed near-perfect classification with very few false positives and false negatives.</p>
             <span class="ps-tag">500-sample Test Set · ROC-AUC: 0.9995</span>
           </div>
         </div>
         <div class="pipeline-step">
-          <div class="ps-num">8</div>
+          <div class="ps-num">6</div>
           <div class="ps-content">
             <h4>Deployment via Flask API</h4>
-            <p>The trained model was serialized with joblib and served through a Flask REST API. The /predict endpoint runs both the ML model and rule engine, returning the hybrid verdict, confidence level, probability breakdown, and a list of which rules fired.</p>
-            <span class="ps-tag">Flask · joblib · REST API · Hybrid Inference</span>
+            <p>The trained model was serialized with joblib and served through a Flask REST API. The /predict endpoint accepts account features and returns the ML verdict, confidence level, probability scores, and feature influence data for explainability.</p>
+            <span class="ps-tag">Flask · joblib · REST API · ML Inference</span>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Hybrid Rule Engine ── -->
-  <section class="method-section" style="padding-top:0">
-    <div class="method-inner">
-      <span class="section-chip">Rule Engine</span>
-      <h2 class="section-title">Domain-Based Rules</h2>
-      <p class="section-sub">Nine hand-crafted rules run alongside the ML model. Each fires independently and contributes to the final hybrid score with its own weight.</p>
-
-      <div class="rule-callout">
-        <h4>Rules & Weights (positive = fake signal, negative = real signal)</h4>
-        <div class="rule-row">
-          <span class="rule-signal fake">Fake</span>
-          <span class="rule-desc">No profile picture — accounts without a photo are disproportionately fake</span>
-          <span class="rule-weight">+0.60</span>
-        </div>
-        <div class="rule-row">
-          <span class="rule-signal fake">Fake</span>
-          <span class="rule-desc">Following &gt; 10× followers AND followers &gt; 250 — classic mass-follow bot pattern</span>
-          <span class="rule-weight">+0.80</span>
-        </div>
-        <div class="rule-row">
-          <span class="rule-signal fake">Fake</span>
-          <span class="rule-desc">Zero posts — empty accounts with no content activity</span>
-          <span class="rule-weight">+0.70</span>
-        </div>
-        <div class="rule-row">
-          <span class="rule-signal fake">Fake</span>
-          <span class="rule-desc">Bio length &lt; 5 characters — no meaningful profile description</span>
-          <span class="rule-weight">+0.40</span>
-        </div>
-        <div class="rule-row">
-          <span class="rule-signal fake">Fake</span>
-          <span class="rule-desc">Username numeric ratio &gt; 30% — e.g. "user293847"</span>
-          <span class="rule-weight">+0.50</span>
-        </div>
-        <div class="rule-row">
-          <span class="rule-signal fake">Fake</span>
-          <span class="rule-desc">Following &gt; 5,000 accounts — mass-follow behavior at scale</span>
-          <span class="rule-weight">+0.60</span>
-        </div>
-        <div class="rule-row">
-          <span class="rule-signal fake">Fake</span>
-          <span class="rule-desc">Private account with fewer than 50 followers — abandoned or bot account</span>
-          <span class="rule-weight">+0.30</span>
-        </div>
-        <div class="rule-row">
-          <span class="rule-signal real">Real</span>
-          <span class="rule-desc">Followers &gt; 50,000 — very difficult to fake at scale</span>
-          <span class="rule-weight">−0.80</span>
-        </div>
-        <div class="rule-row">
-          <span class="rule-signal real">Real</span>
-          <span class="rule-desc">Has external URL AND followers &gt; 1,000 — influencer or business pattern</span>
-          <span class="rule-weight">−0.40</span>
-        </div>
-        <div class="rule-row">
-          <span class="rule-signal real">Real</span>
-          <span class="rule-desc">Following &lt; 2× followers with followers &gt; 100 — healthy engagement ratio</span>
-          <span class="rule-weight">−0.30</span>
         </div>
       </div>
     </div>
@@ -372,7 +293,7 @@
         <div class="mbg-card"><div class="mbg-val">99.2%</div><div class="mbg-lbl">F1 Score</div><div class="mbg-bar"><div class="mbg-fill" data-w="99.2"></div></div></div>
       </div>
 
-      <!-- Confusion matrix — recalculated for 500-sample test set at 99.2% accuracy -->
+      <!-- Confusion matrix -->
       <div class="confusion-wrap" style="margin-top:52px">
         <div class="confusion-matrix">
           <div class="cm-title">Confusion Matrix (Test Set · 500 accounts)</div>
@@ -402,8 +323,8 @@
           <h4>Reading the Matrix</h4>
           <div class="ce-row"><div class="ce-badge tp">TP</div><div class="ce-text"><strong>True Positive — 248</strong><span>Real accounts correctly identified as real. The model accurately recognizes authentic profiles.</span></div></div>
           <div class="ce-row"><div class="ce-badge tn">TN</div><div class="ce-text"><strong>True Negative — 248</strong><span>Fake accounts correctly identified as fake. The model successfully flags inauthentic profiles.</span></div></div>
-          <div class="ce-row"><div class="ce-badge fp">FP</div><div class="ce-text"><strong>False Positive — 2</strong><span>Real accounts incorrectly flagged as fake. Only 2 misclassified in 500 — a major improvement over the previous model.</span></div></div>
-          <div class="ce-row"><div class="ce-badge fn">FN</div><div class="ce-text"><strong>False Negative — 2</strong><span>Fake accounts missed by the model. The rule engine further catches many of these edge cases at inference time.</span></div></div>
+          <div class="ce-row"><div class="ce-badge fp">FP</div><div class="ce-text"><strong>False Positive — 2</strong><span>Real accounts incorrectly flagged as fake. Only 2 misclassified in 500 — excellent precision.</span></div></div>
+          <div class="ce-row"><div class="ce-badge fn">FN</div><div class="ce-text"><strong>False Negative — 2</strong><span>Fake accounts missed by the model. Very few missed cases demonstrate strong recall performance.</span></div></div>
         </div>
       </div>
     </div>

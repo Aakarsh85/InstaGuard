@@ -58,7 +58,7 @@
           <p class="sidebar-desc">ML-powered detection of inauthentic Instagram accounts using behavioral pattern analysis.</p>
         </div>
 
-        <!-- Updated model stats: XGBoost, 11 features, 99.2% accuracy, Hybrid mode -->
+        <!-- Model stats: XGBoost, 11 features, 99.2% accuracy, 2 Modes -->
         <div class="model-stats-block">
           <div class="block-label">Model Stats</div>
           <div class="model-stats-grid">
@@ -79,8 +79,8 @@
             </div>
             <div class="mstat">
               <div class="mstat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-              <span class="mstat-val">Hybrid</span>
-              <span class="mstat-lbl">Engine</span>
+              <span class="mstat-val">2</span>
+              <span class="mstat-lbl">Modes</span>
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@
         </div>
 
         <div class="sidebar-footer">
-          <div class="sidebar-footer-text">Built with Flask + XGBoost + Rule Engine</div>
+          <div class="sidebar-footer-text">Built with Flask + XGBoost</div>
           <div class="sidebar-footer-links">
             <a href="landing.html" class="sf-link">Home</a>
             <span>·</span>
@@ -425,38 +425,6 @@
               <div class="explanation-flags" id="explanationFlags"></div>
             </div>
 
-            <!-- ── NEW: Hybrid Engine Breakdown ── -->
-            <div class="hybrid-breakdown" id="hybridBreakdown" style="display:none;">
-              <div class="hybrid-breakdown-title">Hybrid Engine Breakdown</div>
-
-              <div class="hybrid-row">
-                <span class="hybrid-row-label">ML Model (60%)</span>
-                <div class="hybrid-bar-track">
-                  <div class="hybrid-bar-fill ml" id="hybridBarML" style="width:0%"></div>
-                </div>
-                <span class="hybrid-row-val" id="hybridValML">—</span>
-              </div>
-
-              <div class="hybrid-row">
-                <span class="hybrid-row-label">Rule Engine (40%)</span>
-                <div class="hybrid-bar-track">
-                  <div class="hybrid-bar-fill rules" id="hybridBarRules" style="width:0%"></div>
-                </div>
-                <span class="hybrid-row-val" id="hybridValRules">—</span>
-              </div>
-
-              <div class="hybrid-row">
-                <span class="hybrid-row-label">Final Score</span>
-                <div class="hybrid-bar-track">
-                  <div class="hybrid-bar-fill final" id="hybridBarFinal" style="width:0%"></div>
-                </div>
-                <span class="hybrid-row-val" id="hybridValFinal">—</span>
-              </div>
-
-              <!-- Rules that fired -->
-              <div class="rules-fired-list" id="rulesFiredList"></div>
-            </div>
-
           </div><!-- /result-card -->
 
           <div class="error-card hidden" id="manualError">
@@ -487,7 +455,7 @@
             </div>
           </div>
 
-          <!-- CSV column reference for new format -->
+          <!-- CSV column reference -->
           <div style="margin: 10px 0 0; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6;">
             <strong style="color:rgba(255,255,255,0.6);">Expected CSV columns:</strong><br>
             profile pic, nums/length username, fullname words, nums/length fullname, name==username, description length, external URL, private, #posts, #followers, #follows

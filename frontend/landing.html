@@ -53,9 +53,9 @@
         <em>Accounts Instantly</em>
       </h1>
       <p class="hero-desc">
-        InstaGuard uses a hybrid XGBoost model combined with a rule-based engine to analyze
-        behavioral patterns and profile metadata — classifying Instagram accounts as authentic
-        or inauthentic with 99.2% accuracy.
+        InstaGuard uses an XGBoost machine learning model to analyze behavioral patterns
+        and profile metadata — classifying Instagram accounts as authentic or inauthentic
+        with 99.2% accuracy.
       </p>
       <div class="hero-actions">
         <a href="index.html" class="btn-primary">
@@ -65,7 +65,7 @@
         <a href="methodology.html" class="btn-ghost">View Methodology →</a>
       </div>
 
-      <!-- Stats strip — updated numbers -->
+      <!-- Stats strip -->
       <div class="hero-stats">
         <div class="hstat">
           <span class="hstat-val">99.2%</span>
@@ -176,7 +176,7 @@
         <span class="section-chip">How It Works</span>
       </div>
       <h2 class="section-title">Three steps to detection</h2>
-      <p class="section-sub">InstaGuard analyzes account metadata patterns that strongly correlate with inauthentic behavior, then combines ML predictions with rule-based logic for a final verdict.</p>
+      <p class="section-sub">InstaGuard analyzes account metadata patterns that strongly correlate with inauthentic behavior, then uses ML predictions to deliver a final verdict.</p>
 
       <div class="steps-grid">
         <div class="step-card">
@@ -192,8 +192,8 @@
           <div class="step-icon">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
           </div>
-          <h3>Hybrid ML Processing</h3>
-          <p>An XGBoost model (60% weight) trained on 5,000 samples is combined with a rule-based engine (40% weight) that applies domain-specific fake account logic.</p>
+          <h3>ML Processing</h3>
+          <p>An XGBoost model trained on 5,000 samples analyzes 11 behavioral and structural features to compute a fake probability score for each account.</p>
         </div>
         <div class="step-card">
           <div class="step-num">03</div>
@@ -201,7 +201,7 @@
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           </div>
           <h3>Verdict + Explanation</h3>
-          <p>Receive a real/fake verdict with confidence score, ML vs rule engine breakdown, which rules fired, and a plain-English explanation of the prediction.</p>
+          <p>Receive a real/fake verdict with confidence score, feature influence visualization, and a plain-English explanation of the prediction.</p>
         </div>
       </div>
     </div>
@@ -221,7 +221,7 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           </div>
           <h3>Single Account Analysis</h3>
-          <p>Input 11 account features including profile picture, privacy status, and external URL — and receive an instant hybrid prediction with confidence gauge, ML vs rule breakdown, and feature influence visualization.</p>
+          <p>Input 11 account features including profile picture, privacy status, and external URL — and receive an instant ML prediction with confidence gauge and feature influence visualization.</p>
           <div class="feat-tag">Real-time</div>
         </div>
         <div class="feature-card">
@@ -236,16 +236,16 @@
           <div class="feat-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           </div>
-          <h3>Hybrid Engine</h3>
-          <p>XGBoost ML predictions are combined with 9 hand-crafted rules (follower ratios, profile picture, mass following) for a more robust final score.</p>
-          <div class="feat-tag">60% ML · 40% Rules</div>
+          <h3>Model Accuracy</h3>
+          <p>XGBoost classifier trained with GridSearchCV hyperparameter tuning across 5-fold cross-validation, achieving 99.2% accuracy on the held-out test set.</p>
+          <div class="feat-tag">GridSearchCV · 5-Fold CV</div>
         </div>
         <div class="feature-card">
           <div class="feat-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           </div>
           <h3>Feature Influence</h3>
-          <p>See exactly which of the 11 features drove the prediction with animated influence bars, fired rules list, and plain-English explanation.</p>
+          <p>See exactly which of the 11 features drove the prediction with animated influence bars and a plain-English explanation of why the model decided as it did.</p>
           <div class="feat-tag">Explainable AI</div>
         </div>
         <div class="feature-card">
@@ -253,14 +253,14 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </div>
           <h3>Demo Presets</h3>
-          <p>One-click demo accounts — bot, real, and edge case — to explore the hybrid model's behavior without manual entry.</p>
+          <p>One-click demo accounts — bot, real, and edge case — to explore the model's behavior without manual entry.</p>
           <div class="feat-tag">Interactive</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Model accuracy section — updated metrics -->
+  <!-- Model accuracy section -->
   <section class="section metrics-section">
     <div class="section-inner metrics-inner">
       <div class="metrics-text">
@@ -269,7 +269,7 @@
         <p class="section-sub" style="margin-top:12px">
           The XGBoost model was trained on 5,000 labeled Instagram profiles with stratified
           splitting, achieving near-perfect performance across all key classification metrics.
-          A hybrid rule engine further improves real-world robustness.
+          The model delivers near-perfect performance across all key classification metrics.
         </p>
         <a href="methodology.html" class="btn-ghost" style="margin-top:28px;display:inline-block">
           Read Full Methodology →
