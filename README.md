@@ -18,7 +18,9 @@
 ## 🔗 Live Demo
 
 🌐 **Frontend:** https://insta-guard-pi.vercel.app/
+
 ⚙️ **Backend API:** https://instaguard-backend-2ldg.onrender.com/
+
 📂 **Repository:** https://github.com/Aakarsh85/InstaGuard
 
 ---
@@ -92,6 +94,10 @@ Fake accounts are widely used for:
 ### 🔹 Prediction Result
 
 ![Result](./screenshots/result.png)
+
+### 🔹 Bulk Analysis
+
+![Bulk](./screenshots/bulk.png)
 
 ### 🔹 History / Analytics
 
