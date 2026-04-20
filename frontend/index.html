@@ -9,24 +9,26 @@
   <link rel="shortcut icon" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- Ambient background -->
+  <!-- Ambient background (minimal — no grid/particles) -->
   <div class="ambient-bg">
+    <!-- grid-overlay and noise-overlay hidden via CSS -->
     <div class="grid-overlay"></div>
     <div class="noise-overlay"></div>
+    <!-- canvas hidden via CSS, script.js can still reference it safely -->
     <canvas id="particleCanvas"></canvas>
   </div>
 
   <!-- Top nav bar -->
   <nav class="topnav">
     <div class="topnav-brand">
-      <a href="landing.html" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit">
+      <a href="landing.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit">
         <div class="brand-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         InstaGuard
       </a>
@@ -38,8 +40,8 @@
     </div>
     <div class="topnav-links">
       <button class="theme-toggle" id="themeToggle" title="Toggle theme">
-        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg class="icon-moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
       <div class="status-pill">
         <span class="status-dot"></span>
@@ -58,27 +60,27 @@
           <p class="sidebar-desc">ML-powered detection of inauthentic Instagram accounts using behavioral pattern analysis.</p>
         </div>
 
-        <!-- Model stats: XGBoost, 11 features, 99.2% accuracy, 2 Modes -->
+        <!-- Model stats -->
         <div class="model-stats-block">
-          <div class="block-label">Model Stats</div>
+          <div class="block-label">Model stats</div>
           <div class="model-stats-grid">
             <div class="mstat">
-              <div class="mstat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+              <div class="mstat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
               <span class="mstat-val">99.2%</span>
               <span class="mstat-lbl">Accuracy</span>
             </div>
             <div class="mstat">
-              <div class="mstat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+              <div class="mstat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
               <span class="mstat-val">11</span>
               <span class="mstat-lbl">Features</span>
             </div>
             <div class="mstat">
-              <div class="mstat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+              <div class="mstat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
               <span class="mstat-val">XGB</span>
               <span class="mstat-lbl">Model</span>
             </div>
             <div class="mstat">
-              <div class="mstat-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+              <div class="mstat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
               <span class="mstat-val">2</span>
               <span class="mstat-lbl">Modes</span>
             </div>
@@ -88,14 +90,14 @@
         <!-- Session history -->
         <div class="history-block">
           <div class="block-label-row">
-            <div class="block-label">Session History</div>
+            <div class="block-label">Session history</div>
             <button class="clear-history-btn" id="clearHistory" title="Clear history">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             </button>
           </div>
           <div class="history-list" id="historyList">
             <div class="history-empty">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
               <span>No predictions yet</span>
             </div>
           </div>
@@ -118,12 +120,12 @@
       <!-- Mode tabs -->
       <div class="mode-tabs">
         <button class="tab-btn active" id="manualTab" data-mode="manual">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          Manual Input
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Manual input
         </button>
         <button class="tab-btn" id="bulkTab" data-mode="bulk">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          Bulk Upload
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Bulk upload
         </button>
       </div>
 
@@ -133,7 +135,7 @@
         <!-- Profile preview card -->
         <div class="profile-preview-card" id="profilePreview">
           <div class="profile-preview-avatar" id="previewAvatar">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </div>
           <div class="profile-preview-info">
             <div class="profile-preview-name" id="previewName">@username</div>
@@ -150,21 +152,21 @@
         <!-- Demo Presets -->
         <div class="demo-presets-bar" id="demoPresetsBar">
           <div class="demo-presets-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             Try a demo
           </div>
           <div class="demo-preset-btns">
             <button class="demo-btn bot" onclick="loadPreset('bot')">
               <span class="demo-btn-dot"></span>
-              Bot Account
+              Bot account
             </button>
             <button class="demo-btn real" onclick="loadPreset('real')">
               <span class="demo-btn-dot"></span>
-              Real Account
+              Real account
             </button>
             <button class="demo-btn edge" onclick="loadPreset('edge')">
               <span class="demo-btn-dot"></span>
-              Edge Case
+              Edge case
             </button>
           </div>
         </div>
@@ -172,16 +174,16 @@
         <!-- Username fetch bar -->
         <div class="username-fetch-bar" id="usernameFetchBar">
           <div class="ufb-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            AI Feature Estimator
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            AI feature estimator
           </div>
           <div class="ufb-input-wrap">
             <span class="ufb-at">@</span>
             <input type="text" id="usernameInput" placeholder="Enter any Instagram username..." class="ufb-input" maxlength="50" />
           </div>
           <button class="ufb-btn" id="fetchUsernameBtn" onclick="fetchUsername()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
-            Estimate Features
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
+            Estimate features
           </button>
           <div class="ufb-hint">AI will estimate realistic feature values from the username pattern</div>
         </div>
@@ -189,22 +191,22 @@
         <!-- ===== INPUT FORM ===== -->
         <div class="input-card">
           <div class="input-card-header">
-            <h2>Account Features</h2>
+            <h2>Account features</h2>
             <button class="reset-btn" id="resetForm" title="Reset all fields">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
               Reset
             </button>
           </div>
 
           <div class="form-grid">
 
-            <!-- ── SECTION: Profile Identity ── -->
-            <div class="section-divider">Profile Identity</div>
+            <!-- ── SECTION: Profile identity ── -->
+            <div class="section-divider">Profile identity</div>
 
-            <!-- Profile Picture (toggle) -->
+            <!-- Profile Picture -->
             <div class="field-group">
               <div class="field-label-row">
-                <label>Profile Picture</label>
+                <label>Profile picture</label>
                 <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Does the account have a profile photo? Fake accounts very commonly have no profile picture — one of the strongest fake signals.</div></div>
               </div>
               <label class="toggle-field-wrap" for="profile_pic">
@@ -217,10 +219,10 @@
               </label>
             </div>
 
-            <!-- Private Account (toggle) -->
+            <!-- Private Account -->
             <div class="field-group">
               <div class="field-label-row">
-                <label>Private Account</label>
+                <label>Private account</label>
                 <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Is this account set to private? Private accounts with very few followers can be a suspicious signal.</div></div>
               </div>
               <label class="toggle-field-wrap" for="private">
@@ -233,10 +235,10 @@
               </label>
             </div>
 
-            <!-- External URL (toggle) -->
+            <!-- External URL -->
             <div class="field-group">
               <div class="field-label-row">
-                <label>External URL in Bio</label>
+                <label>External URL in bio</label>
                 <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Does the bio contain a website link? Real influencers and businesses usually have an external URL; bots usually don't.</div></div>
               </div>
               <label class="toggle-field-wrap" for="external_url">
@@ -249,24 +251,24 @@
               </label>
             </div>
 
-            <!-- Name == Username (toggle) -->
+            <!-- Name == Username -->
             <div class="field-group">
               <div class="field-label-row">
-                <label>Name Matches Username</label>
-                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Is the display name exactly the same as the username? e.g. username "john_doe" and display name "john_doe". This is a mild fake signal.</div></div>
+                <label>Name matches username</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Is the display name exactly the same as the username? This is a mild fake signal.</div></div>
               </div>
               <label class="toggle-field-wrap" for="name_eq_username">
                 <div class="toggle-switch">
                   <input type="checkbox" id="name_eq_username" onchange="updateToggleBadge(this)" />
                   <span class="toggle-slider"></span>
                 </div>
-                <span class="toggle-label-text"><strong id="name_eq_username_label">Name ≠ Username</strong></span>
+                <span class="toggle-label-text"><strong id="name_eq_username_label">Name ≠ username</strong></span>
                 <span class="toggle-state-badge" id="name_eq_username_badge">OFF</span>
               </label>
             </div>
 
-            <!-- ── SECTION: Activity Stats ── -->
-            <div class="section-divider">Activity Stats</div>
+            <!-- ── SECTION: Activity stats ── -->
+            <div class="section-divider">Activity stats</div>
 
             <!-- Followers -->
             <div class="field-group">
@@ -276,7 +278,7 @@
               </div>
               <div class="field-input-wrap" id="wrap_followers">
                 <input type="number" id="followers" placeholder="e.g. 300" min="0" oninput="validateField(this); updatePreview()" />
-                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+                <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
               </div>
               <span class="field-feedback" id="fb_followers"></span>
             </div>
@@ -289,7 +291,7 @@
               </div>
               <div class="field-input-wrap" id="wrap_following">
                 <input type="number" id="following" placeholder="e.g. 180" min="0" oninput="validateField(this); updatePreview()" />
-                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></span>
+                <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></span>
               </div>
               <span class="field-feedback" id="fb_following"></span>
             </div>
@@ -302,7 +304,7 @@
               </div>
               <div class="field-input-wrap" id="wrap_posts">
                 <input type="number" id="posts" placeholder="e.g. 120" min="0" oninput="validateField(this); updatePreview()" />
-                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
+                <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
               </div>
               <span class="field-feedback" id="fb_posts"></span>
             </div>
@@ -310,28 +312,28 @@
             <!-- Description Length -->
             <div class="field-group">
               <div class="field-label-row">
-                <label for="description_length">Bio Length (characters)</label>
-                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Character count of the profile bio. Real accounts often have meaningful bios; fake ones usually don't. Count the characters in their bio.</div></div>
+                <label for="description_length">Bio length (chars)</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Character count of the profile bio. Real accounts often have meaningful bios; fake ones usually don't.</div></div>
               </div>
               <div class="field-input-wrap" id="wrap_description_length">
                 <input type="number" id="description_length" placeholder="e.g. 50" min="0" max="150" oninput="validateField(this); updatePreview()" />
-                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></span>
+                <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></span>
               </div>
               <span class="field-feedback" id="fb_description_length"></span>
             </div>
 
-            <!-- ── SECTION: Name Analysis ── -->
-            <div class="section-divider">Name Analysis</div>
+            <!-- ── SECTION: Name analysis ── -->
+            <div class="section-divider">Name analysis</div>
 
             <!-- Full Name Words -->
             <div class="field-group">
               <div class="field-label-row">
-                <label for="fullname_words">Full Name Word Count</label>
-                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Number of words in the display name. e.g. "John Smith" = 2, "johnsmith99" = 1. Real people usually have 2+ words.</div></div>
+                <label for="fullname_words">Full name word count</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Number of words in the display name. e.g. "John Smith" = 2. Real people usually have 2+ words.</div></div>
               </div>
               <div class="field-input-wrap" id="wrap_fullname_words">
                 <input type="number" id="fullname_words" placeholder="e.g. 2" min="0" max="10" oninput="validateField(this)" />
-                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>
+                <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>
               </div>
               <span class="field-feedback" id="fb_fullname_words"></span>
             </div>
@@ -339,12 +341,12 @@
             <!-- Nums/Length Username -->
             <div class="field-group">
               <div class="field-label-row">
-                <label for="nums_length_username">Username Numeric Ratio</label>
-                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Proportion of digits in the username (0–1). e.g. "user1234" has 4 digits out of 8 characters = 0.50. Bots often have highly numeric usernames.</div></div>
+                <label for="nums_length_username">Username numeric ratio</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Proportion of digits in the username (0–1). e.g. "user1234" = 4/8 = 0.50. Bots often have highly numeric usernames.</div></div>
               </div>
               <div class="field-input-wrap" id="wrap_nums_length_username">
                 <input type="number" id="nums_length_username" placeholder="e.g. 0.27" min="0" max="1" step="0.01" oninput="validateRatio(this)" />
-                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></span>
+                <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></span>
               </div>
               <span class="field-feedback" id="fb_nums_length_username"></span>
             </div>
@@ -352,12 +354,12 @@
             <!-- Nums/Length Fullname -->
             <div class="field-group">
               <div class="field-label-row">
-                <label for="nums_length_fullname">Full Name Numeric Ratio</label>
-                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Proportion of digits in the full display name (0–1). e.g. "John99" = 2 digits out of 6 chars = 0.33. Real names rarely have numbers.</div></div>
+                <label for="nums_length_fullname">Full name numeric ratio</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Proportion of digits in the full display name (0–1). Real names rarely have numbers.</div></div>
               </div>
               <div class="field-input-wrap" id="wrap_nums_length_fullname">
                 <input type="number" id="nums_length_fullname" placeholder="e.g. 0.0" min="0" max="1" step="0.01" oninput="validateRatio(this)" />
-                <span class="field-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></span>
+                <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></span>
               </div>
               <span class="field-feedback" id="fb_nums_length_fullname"></span>
             </div>
@@ -366,8 +368,8 @@
 
           <button class="predict-btn" id="predictManualBtn" onclick="predictManual()">
             <span class="predict-btn-inner">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
-              Analyze Account
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
+              Analyze account
             </span>
           </button>
         </div>
@@ -384,10 +386,10 @@
           <div class="result-card hidden" id="manualResultCard">
             <div class="result-header">
               <div class="result-icon-wrap" id="resultIconWrap">
-                <svg class="result-icon" id="resultIcon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"></svg>
+                <svg class="result-icon" id="resultIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"></svg>
               </div>
               <div class="result-title-block">
-                <p class="result-eyebrow">Prediction Result</p>
+                <p class="result-eyebrow">Prediction result</p>
                 <h3 class="result-label-text" id="resultLabelText">—</h3>
               </div>
               <div class="result-badge" id="resultBadge">—</div>
@@ -409,7 +411,7 @@
 
             <!-- Feature importance -->
             <div class="feature-importance-section">
-              <div class="section-label">Feature Influence</div>
+              <div class="section-label">Feature influence</div>
               <div class="feature-bars" id="featureBars"></div>
             </div>
 
@@ -417,7 +419,7 @@
             <div class="explanation-card" id="explanationCard">
               <div class="explanation-header">
                 <div class="explanation-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
                 </div>
                 <span class="explanation-title">Why this prediction?</span>
               </div>
@@ -428,7 +430,7 @@
           </div><!-- /result-card -->
 
           <div class="error-card hidden" id="manualError">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <span id="manualErrorText"></span>
           </div>
         </div>
@@ -442,29 +444,29 @@
             <input type="file" id="fileInput" accept=".csv,.json" />
             <div class="upload-zone-inner" id="uploadZoneInner">
               <div class="upload-icon-wrap">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               </div>
               <p class="upload-title">Drop your file here</p>
               <p class="upload-sub">or <span class="upload-browse">browse</span> to upload</p>
-              <p class="upload-formats">CSV or JSON · Max 10MB · Use new 11-feature format</p>
+              <p class="upload-formats">CSV or JSON · Max 10MB · Use 11-feature format</p>
             </div>
             <div class="upload-file-selected hidden" id="fileSelectedInfo">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               <span id="selectedFileName">No file</span>
               <button class="remove-file-btn" id="removeFileBtn">✕</button>
             </div>
           </div>
 
           <!-- CSV column reference -->
-          <div style="margin: 10px 0 0; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.6;">
-            <strong style="color:rgba(255,255,255,0.6);">Expected CSV columns:</strong><br>
+          <div style="margin: 10px 0 0; padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; font-size: 11.5px; color: var(--muted2); line-height: 1.6;">
+            <strong style="color:var(--text2);">Expected CSV columns:</strong><br>
             profile pic, nums/length username, fullname words, nums/length fullname, name==username, description length, external URL, private, #posts, #followers, #follows
           </div>
 
           <button class="predict-btn" id="predictBulkBtn" onclick="predictFile()">
             <span class="predict-btn-inner">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              Upload & Analyze
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload &amp; analyze
             </span>
           </button>
         </div>
@@ -484,9 +486,9 @@
             <div class="bss-divider"></div>
             <div class="bss-item fake"><span class="bss-val" id="bssFake">0</span><span class="bss-lbl">Fake</span></div>
             <div class="bss-divider"></div>
-            <div class="bss-item conf"><span class="bss-val" id="bssConf">—</span><span class="bss-lbl">Avg Confidence</span></div>
+            <div class="bss-item conf"><span class="bss-val" id="bssConf">—</span><span class="bss-lbl">Avg confidence</span></div>
             <button class="export-btn" id="exportBtn" onclick="exportResults()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Export CSV
             </button>
           </div>
@@ -498,7 +500,7 @@
             </div>
           </div>
           <div class="table-header-row">
-            <h3>Predictions Table</h3>
+            <h3>Predictions</h3>
             <div class="table-filter">
               <button class="filter-btn active" data-filter="all">All</button>
               <button class="filter-btn" data-filter="real">Real</button>
@@ -515,7 +517,7 @@
         </div>
 
         <div class="error-card hidden" id="bulkError">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <span id="bulkErrorText"></span>
         </div>
       </div>
