@@ -72,8 +72,8 @@ def _first_existing_path(paths: List[Path]) -> Optional[Path]:
     return None
 
 
-MODEL_PATH   = _first_existing_path(MODEL_PATH_CANDIDATES)
-FRONTEND_DIR = _first_existing_path(FRONTEND_DIR_CANDIDATES)
+MODEL_PATH    = _first_existing_path(MODEL_PATH_CANDIDATES)
+FRONTEND_DIR  = _first_existing_path(FRONTEND_DIR_CANDIDATES)
 FEATURES_PATH = _first_existing_path(FEATURES_PATH_CANDIDATES)
 
 if MODEL_PATH is None:
@@ -130,27 +130,24 @@ def preprocess_input(df: pd.DataFrame) -> pd.DataFrame:
 # -----------------------------------------------------------------------------
 def predict_rows(df: pd.DataFrame, raw_data_list: List[Dict]) -> List[Dict[str, Any]]:
     processed = preprocess_input(df)
-
-    probas = model.predict_proba(processed)
-
-    results = []
+    probas    = model.predict_proba(processed)
+    results   = []
 
     for i in range(len(processed)):
         fake_prob = float(probas[i][1])
         real_prob = float(probas[i][0])
 
         final_pred = 1 if fake_prob >= 0.5 else 0
-
         level = "High" if fake_prob >= 0.8 else "Medium" if fake_prob >= 0.6 else "Low"
 
         results.append({
             "prediction": final_pred,
             "label": "Fake Account" if final_pred == 1 else "Real Account",
             "confidence": {
-                "score": round(fake_prob if final_pred == 1 else real_prob, 4),
+                "score":      round(fake_prob if final_pred == 1 else real_prob, 4),
                 "percentage": round((fake_prob if final_pred == 1 else real_prob) * 100, 2),
-                "level": level,
-                "color": "danger" if final_pred == 1 else "success"
+                "level":      level,
+                "color":      "danger" if final_pred == 1 else "success"
             },
             "probabilities": {
                 "real": round(real_prob, 4),
@@ -174,11 +171,11 @@ def home():
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({
-        "success": True,
-        "status": "running",
+        "success":      True,
+        "status":       "running",
         "model_loaded": True,
-        "model_path": str(MODEL_PATH),
-        "features": EXPECTED_FEATURE_COLUMNS
+        "model_path":   str(MODEL_PATH),
+        "features":     EXPECTED_FEATURE_COLUMNS
     })
 
 
@@ -201,10 +198,57 @@ def predict():
             return jsonify({"success": True, "result": results[0]})
 
     except Exception as exc:
+        return jsonify({"success": False, "error": str(exc)}), 400
+
+
+# -----------------------------------------------------------------------------
+# File upload — bulk predict from CSV or JSON file
+# -----------------------------------------------------------------------------
+@app.route("/predict-file", methods=["POST"])
+def predict_file():
+    try:
+        if "file" not in request.files:
+            return jsonify({"success": False, "error": "No file uploaded. Send the file under the key 'file'."}), 400
+
+        file     = request.files["file"]
+        filename = file.filename.lower()
+
+        # Read into DataFrame depending on file type
+        if filename.endswith(".csv"):
+            raw_df = pd.read_csv(file)
+        elif filename.endswith(".json"):
+            raw_df = pd.read_json(file)
+        else:
+            return jsonify({"success": False, "error": "Unsupported file type. Please upload a .csv or .json file."}), 400
+
+        if raw_df.empty:
+            return jsonify({"success": False, "error": "The uploaded file is empty."}), 400
+
+        raw_list = raw_df.to_dict(orient="records")
+        results  = predict_rows(raw_df, raw_list)
+
+        # Summary stats
+        total      = len(results)
+        fake_count = sum(1 for r in results if r["prediction"] == 1)
+        real_count = total - fake_count
+        avg_conf   = sum(r["confidence"]["score"] for r in results) / total
+
+        # Attach row number to each result for the frontend table
+        predictions = [{**r, "row": i + 1} for i, r in enumerate(results)]
+
         return jsonify({
-            "success": False,
-            "error": str(exc)
-        }), 400
+            "success": True,
+            "summary": {
+                "total":              total,
+                "fake":               fake_count,
+                "real":               real_count,
+                "average_confidence": round(avg_conf, 4)
+            },
+            "predictions": predictions
+        })
+
+    except Exception as exc:
+        return jsonify({"success": False, "error": str(exc)}), 400
 
 
 # -----------------------------------------------------------------------------
