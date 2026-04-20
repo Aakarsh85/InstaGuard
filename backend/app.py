@@ -47,19 +47,19 @@ FEATURES_PATH_CANDIDATES = [
     BASE_DIR / "model" / "feature_columns.json",
 ]
 
-# Feature columns (in exact order from training)
+# Feature columns — must match post-transformation names from training
 NEW_FEATURE_COLUMNS = [
-    "profile pic",
-    "nums/length username",
-    "fullname words",
-    "nums/length fullname",
+    "profile_pic",
+    "nums_length_username",
+    "fullname_words",
+    "nums_length_fullname",
     "name==username",
-    "description length",
-    "external URL",
+    "description_length",
+    "external_url",
     "private",
-    "#posts",
-    "#followers",
-    "#follows",
+    "num_posts",
+    "num_followers",
+    "num_follows",
 ]
 
 # -----------------------------------------------------------------------------
@@ -103,7 +103,15 @@ MODEL_CLASSES = list(getattr(model, "classes_", [0, 1]))
 def preprocess_input(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
-    df.columns = df.columns.str.strip()
+    # Match exact column renaming used during model training
+    df.columns = (
+        df.columns
+        .str.strip()
+        .str.replace(" ", "_", regex=False)
+        .str.replace("/", "_", regex=False)
+        .str.replace("#", "num_", regex=False)
+        .str.lower()
+    )
 
     replace_map = {"Yes": 1, "No": 0, "True": 1, "False": 0, True: 1, False: 0}
     df = df.replace(replace_map)
