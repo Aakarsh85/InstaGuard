@@ -9,7 +9,7 @@
   <link rel="shortcut icon" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="landing.css"/>
 </head>
 <body>
@@ -26,7 +26,7 @@
     <div class="nav-inner">
       <a href="landing.html" class="nav-brand">
         <div class="brand-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         InstaGuard
       </a>
@@ -35,7 +35,12 @@
         <a href="methodology.html" class="nav-link active">Methodology</a>
         <a href="index.html" class="nav-link">Dashboard</a>
       </div>
-      <a href="index.html" class="nav-cta">Launch App →</a>
+      <!-- Theme toggle -->
+      <button class="nav-theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle dark mode">
+        <svg class="icon-sun" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg class="icon-moon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="index.html" class="nav-cta">Launch app →</a>
     </div>
   </nav>
 
@@ -48,25 +53,25 @@
     </div>
     <div class="hero-eyebrow" style="justify-content:center">
       <span class="eyebrow-dot"></span>
-      Research & Technical Details
+      Research &amp; technical details
     </div>
     <h1 class="hero-title">How InstaGuard<br><em>actually works</em></h1>
-    <p class="hero-desc" style="margin-top:18px">
+    <p class="hero-desc" style="margin-top:16px">
       A deep dive into the dataset, feature engineering, XGBoost model training, and performance
       metrics behind the fake account detection system.
     </p>
   </div>
 
-  <!-- ── Dataset ── -->
+  <!-- Dataset -->
   <section class="method-section">
     <div class="method-inner">
       <span class="section-chip">Dataset</span>
-      <h2 class="section-title">Training Data</h2>
+      <h2 class="section-title">Training data</h2>
       <p class="section-sub">The model was trained on a labeled Instagram account dataset of 5,000 profiles with extracted behavioral and structural metadata, split using stratified sampling to preserve class balance.</p>
 
       <div class="dataset-grid">
         <div class="dataset-card">
-          <h4>Dataset Overview</h4>
+          <h4>Dataset overview</h4>
           <div class="dataset-stat">
             <span class="ds-val">5,000</span>
             <span class="ds-lbl">total accounts</span>
@@ -74,20 +79,20 @@
           <div class="ds-breakdown">
             <div class="dsb-row">
               <span class="dsb-dot real"></span>
-              Real Accounts
+              Real accounts
               <div class="dsb-bar"><div class="dsb-fill real" style="width:50%"></div></div>
               <span class="dsb-pct">50%</span>
             </div>
             <div class="dsb-row">
               <span class="dsb-dot fake"></span>
-              Fake Accounts
+              Fake accounts
               <div class="dsb-bar"><div class="dsb-fill fake" style="width:50%"></div></div>
               <span class="dsb-pct">50%</span>
             </div>
           </div>
         </div>
         <div class="dataset-card">
-          <h4>Stratified Split (80 / 10 / 10)</h4>
+          <h4>Stratified split (80 / 10 / 10)</h4>
           <div class="dataset-stat">
             <span class="ds-val">80%</span>
             <span class="ds-lbl">training data</span>
@@ -95,19 +100,19 @@
           <div class="ds-breakdown">
             <div class="dsb-row">
               <span class="dsb-dot real"></span>
-              Training Set
+              Training set
               <div class="dsb-bar"><div class="dsb-fill real" style="width:80%"></div></div>
               <span class="dsb-pct">4,000</span>
             </div>
             <div class="dsb-row">
               <span class="dsb-dot fake"></span>
-              Validation Set
+              Validation set
               <div class="dsb-bar"><div class="dsb-fill fake" style="width:10%"></div></div>
               <span class="dsb-pct">500</span>
             </div>
             <div class="dsb-row">
               <span class="dsb-dot real"></span>
-              Test Set
+              Test set
               <div class="dsb-bar"><div class="dsb-fill real" style="width:10%"></div></div>
               <span class="dsb-pct">500</span>
             </div>
@@ -117,11 +122,11 @@
     </div>
   </section>
 
-  <!-- ── Features ── -->
+  <!-- Features -->
   <section class="method-section" style="padding-top:0">
     <div class="method-inner">
-      <span class="section-chip">Feature Engineering</span>
-      <h2 class="section-title">The 11 Features</h2>
+      <span class="section-chip">Feature engineering</span>
+      <h2 class="section-title">The 11 features</h2>
       <p class="section-sub">Each feature was selected based on its correlation with inauthentic account behavior. The model uses 4 binary features — profile picture, private status, external URL, and name-username match — which are among the strongest fake signals.</p>
 
       <div class="feature-table-wrap">
@@ -131,7 +136,7 @@
               <th>Feature</th>
               <th>Type</th>
               <th>Description</th>
-              <th>Why It Matters</th>
+              <th>Why it matters</th>
               <th>Importance</th>
             </tr>
           </thead>
@@ -219,18 +224,18 @@
     </div>
   </section>
 
-  <!-- ── Pipeline ── -->
+  <!-- Pipeline -->
   <section class="method-section" style="padding-top:0">
     <div class="method-inner">
       <span class="section-chip">Pipeline</span>
-      <h2 class="section-title">Training & Deployment Pipeline</h2>
+      <h2 class="section-title">Training &amp; deployment pipeline</h2>
       <p class="section-sub">The end-to-end process from raw data to a ML prediction system.</p>
 
       <div class="pipeline">
         <div class="pipeline-step">
           <div class="ps-num">1</div>
           <div class="ps-content">
-            <h4>Data Collection & Labeling</h4>
+            <h4>Data collection &amp; labeling</h4>
             <p>Instagram account data was collected and labeled as real (0) or fake (1). The dataset contains 5,000 profiles with 11 extracted metadata features including profile picture presence, follower/following counts, post counts, username structure, and bio information.</p>
             <span class="ps-tag">5,000 labeled samples · Balanced 50/50</span>
           </div>
@@ -238,33 +243,33 @@
         <div class="pipeline-step">
           <div class="ps-num">2</div>
           <div class="ps-content">
-            <h4>Preprocessing & Column Normalization</h4>
+            <h4>Preprocessing &amp; column normalization</h4>
             <p>Column names were normalized (stripped, lowercased, special characters replaced). Binary features were validated as 0/1. Numeric columns were coerced and missing values filled. Features were aligned to the model's training schema using reindex.</p>
-            <span class="ps-tag">Column Normalization · Type Coercion · Reindex</span>
+            <span class="ps-tag">Column normalization · Type coercion · Reindex</span>
           </div>
         </div>
         <div class="pipeline-step">
           <div class="ps-num">3</div>
           <div class="ps-content">
-            <h4>Stratified Train / Validation / Test Split</h4>
+            <h4>Stratified train / validation / test split</h4>
             <p>The dataset was split 80/10/10 using stratified sampling to preserve class balance across all three sets. This prevents the model from seeing test data during any phase of training or validation, giving a true unbiased performance estimate.</p>
-            <span class="ps-tag">80/10/10 Stratified Split · train_test_split(stratify=y)</span>
+            <span class="ps-tag">80/10/10 stratified split · train_test_split(stratify=y)</span>
           </div>
         </div>
         <div class="pipeline-step">
           <div class="ps-num">4</div>
           <div class="ps-content">
-            <h4>XGBoost Model Training with GridSearchCV</h4>
+            <h4>XGBoost model training with GridSearchCV</h4>
             <p>An XGBoost classifier was tuned using 5-fold cross-validated Grid Search across n_estimators [100, 200], max_depth [3, 5, 7], learning_rate [0.01, 0.1, 0.2], subsample [0.8, 1.0], and colsample_bytree [0.8, 1.0]. Scoring metric was ROC-AUC. The best estimator was selected and saved.</p>
-            <span class="ps-tag">XGBoost · GridSearchCV · ROC-AUC · 5-Fold CV</span>
+            <span class="ps-tag">XGBoost · GridSearchCV · ROC-AUC · 5-fold CV</span>
           </div>
         </div>
         <div class="pipeline-step">
           <div class="ps-num">5</div>
           <div class="ps-content">
-            <h4>Evaluation & Validation</h4>
+            <h4>Evaluation &amp; validation</h4>
             <p>The model was evaluated on the held-out test set of 500 accounts. Accuracy, precision, recall, F1 score, and ROC-AUC were measured. The confusion matrix confirmed near-perfect classification with very few false positives and false negatives.</p>
-            <span class="ps-tag">500-sample Test Set · ROC-AUC: 0.9995</span>
+            <span class="ps-tag">500-sample test set · ROC-AUC: 0.9995</span>
           </div>
         </div>
         <div class="pipeline-step">
@@ -272,59 +277,59 @@
           <div class="ps-content">
             <h4>Deployment via Flask API</h4>
             <p>The trained model was serialized with joblib and served through a Flask REST API. The /predict endpoint accepts account features and returns the ML verdict, confidence level, probability scores, and feature influence data for explainability.</p>
-            <span class="ps-tag">Flask · joblib · REST API · ML Inference</span>
+            <span class="ps-tag">Flask · joblib · REST API · ML inference</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Model Performance ── -->
+  <!-- Model Performance -->
   <section class="method-section" style="padding-top:0">
     <div class="method-inner">
       <span class="section-chip">Results</span>
-      <h2 class="section-title">Model Performance</h2>
+      <h2 class="section-title">Model performance</h2>
       <p class="section-sub">Evaluation metrics on the held-out test set of 500 accounts. The ROC-AUC score of 0.9995 indicates near-perfect class separation.</p>
 
       <div class="metrics-big-grid">
         <div class="mbg-card"><div class="mbg-val">99.2%</div><div class="mbg-lbl">Accuracy</div><div class="mbg-bar"><div class="mbg-fill" data-w="99.2"></div></div></div>
         <div class="mbg-card"><div class="mbg-val">99.6%</div><div class="mbg-lbl">Precision</div><div class="mbg-bar"><div class="mbg-fill" data-w="99.6"></div></div></div>
         <div class="mbg-card"><div class="mbg-val">98.8%</div><div class="mbg-lbl">Recall</div><div class="mbg-bar"><div class="mbg-fill" data-w="98.8"></div></div></div>
-        <div class="mbg-card"><div class="mbg-val">99.2%</div><div class="mbg-lbl">F1 Score</div><div class="mbg-bar"><div class="mbg-fill" data-w="99.2"></div></div></div>
+        <div class="mbg-card"><div class="mbg-val">99.2%</div><div class="mbg-lbl">F1 score</div><div class="mbg-bar"><div class="mbg-fill" data-w="99.2"></div></div></div>
       </div>
 
       <!-- Confusion matrix -->
-      <div class="confusion-wrap" style="margin-top:52px">
+      <div class="confusion-wrap" style="margin-top:48px">
         <div class="confusion-matrix">
-          <div class="cm-title">Confusion Matrix (Test Set · 500 accounts)</div>
+          <div class="cm-title">Confusion matrix (test set · 500 accounts)</div>
           <table class="cm-table">
             <thead>
               <tr>
                 <th></th>
-                <th>Predicted Real</th>
-                <th>Predicted Fake</th>
+                <th>Predicted real</th>
+                <th>Predicted fake</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <th style="text-align:right;padding-right:10px;font-size:0.73rem;color:var(--muted2)">Actual Real</th>
-                <td><div class="cm-cell tp"><span class="cm-val">248</span><span class="cm-label">True Positive</span></div></td>
-                <td><div class="cm-cell fp"><span class="cm-val">2</span><span class="cm-label">False Positive</span></div></td>
+                <th style="text-align:right;padding-right:9px;font-size:0.7rem;color:var(--muted2)">Actual real</th>
+                <td><div class="cm-cell tp"><span class="cm-val">248</span><span class="cm-label">True positive</span></div></td>
+                <td><div class="cm-cell fp"><span class="cm-val">2</span><span class="cm-label">False positive</span></div></td>
               </tr>
               <tr>
-                <th style="text-align:right;padding-right:10px;font-size:0.73rem;color:var(--muted2)">Actual Fake</th>
-                <td><div class="cm-cell fn"><span class="cm-val">2</span><span class="cm-label">False Negative</span></div></td>
-                <td><div class="cm-cell tn"><span class="cm-val">248</span><span class="cm-label">True Negative</span></div></td>
+                <th style="text-align:right;padding-right:9px;font-size:0.7rem;color:var(--muted2)">Actual fake</th>
+                <td><div class="cm-cell fn"><span class="cm-val">2</span><span class="cm-label">False negative</span></div></td>
+                <td><div class="cm-cell tn"><span class="cm-val">248</span><span class="cm-label">True negative</span></div></td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="confusion-explanation">
-          <h4>Reading the Matrix</h4>
-          <div class="ce-row"><div class="ce-badge tp">TP</div><div class="ce-text"><strong>True Positive — 248</strong><span>Real accounts correctly identified as real. The model accurately recognizes authentic profiles.</span></div></div>
-          <div class="ce-row"><div class="ce-badge tn">TN</div><div class="ce-text"><strong>True Negative — 248</strong><span>Fake accounts correctly identified as fake. The model successfully flags inauthentic profiles.</span></div></div>
-          <div class="ce-row"><div class="ce-badge fp">FP</div><div class="ce-text"><strong>False Positive — 2</strong><span>Real accounts incorrectly flagged as fake. Only 2 misclassified in 500 — excellent precision.</span></div></div>
-          <div class="ce-row"><div class="ce-badge fn">FN</div><div class="ce-text"><strong>False Negative — 2</strong><span>Fake accounts missed by the model. Very few missed cases demonstrate strong recall performance.</span></div></div>
+          <h4>Reading the matrix</h4>
+          <div class="ce-row"><div class="ce-badge tp">TP</div><div class="ce-text"><strong>True positive — 248</strong><span>Real accounts correctly identified as real. The model accurately recognizes authentic profiles.</span></div></div>
+          <div class="ce-row"><div class="ce-badge tn">TN</div><div class="ce-text"><strong>True negative — 248</strong><span>Fake accounts correctly identified as fake. The model successfully flags inauthentic profiles.</span></div></div>
+          <div class="ce-row"><div class="ce-badge fp">FP</div><div class="ce-text"><strong>False positive — 2</strong><span>Real accounts incorrectly flagged as fake. Only 2 misclassified in 500 — excellent precision.</span></div></div>
+          <div class="ce-row"><div class="ce-badge fn">FN</div><div class="ce-text"><strong>False negative — 2</strong><span>Fake accounts missed by the model. Very few missed cases demonstrate strong recall performance.</span></div></div>
         </div>
       </div>
     </div>
@@ -336,8 +341,8 @@
       <h2>See it in action</h2>
       <p>Try the live dashboard with demo presets or your own data.</p>
       <div class="cta-actions">
-        <a href="index.html" class="btn-primary large">Launch Dashboard →</a>
-        <a href="landing.html" class="btn-ghost large">Back to Home</a>
+        <a href="index.html" class="btn-primary large">Launch dashboard →</a>
+        <a href="landing.html" class="btn-ghost large">Back to home</a>
       </div>
     </div>
   </section>
@@ -346,7 +351,7 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <div class="brand-icon small">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         InstaGuard
       </div>
@@ -355,30 +360,10 @@
         <a href="methodology.html">Methodology</a>
         <a href="index.html">Dashboard</a>
       </div>
-      <div class="footer-note">Final Year Project · ML-powered Instagram Account Analysis</div>
+      <div class="footer-note">Final year project · ML-powered Instagram account analysis</div>
     </div>
   </footer>
 
-  <script>
-    window.addEventListener('scroll', () => {
-      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
-    });
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.querySelectorAll('.mbg-fill, .dsb-fill, .mc-fill').forEach(bar => {
-            const w = bar.dataset.w;
-            if (w) setTimeout(() => { bar.style.width = w + '%'; }, 100);
-          });
-        }
-      });
-    }, { threshold: 0.2 });
-    document.querySelectorAll('.metrics-big-grid, .dataset-card').forEach(el => observer.observe(el));
-
-    document.querySelectorAll('.pipeline-step').forEach((el, i) => {
-      el.style.animationDelay = `${i * 0.1}s`;
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>

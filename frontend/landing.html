@@ -9,12 +9,11 @@
   <link rel="shortcut icon" href="favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="landing.css"/>
 </head>
 <body>
 
-  <!-- Mesh background -->
   <div class="mesh-bg">
     <div class="mesh-orb orb-1"></div>
     <div class="mesh-orb orb-2"></div>
@@ -28,7 +27,7 @@
     <div class="nav-inner">
       <a href="landing.html" class="nav-brand">
         <div class="brand-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         InstaGuard
       </a>
@@ -37,7 +36,12 @@
         <a href="methodology.html" class="nav-link">Methodology</a>
         <a href="index.html" class="nav-link">Dashboard</a>
       </div>
-      <a href="index.html" class="nav-cta">Launch App →</a>
+      <!-- Theme toggle -->
+      <button class="nav-theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle dark mode">
+        <svg class="icon-sun" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        <svg class="icon-moon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="index.html" class="nav-cta">Launch app →</a>
     </div>
   </nav>
 
@@ -46,11 +50,11 @@
     <div class="hero-inner">
       <div class="hero-eyebrow">
         <span class="eyebrow-dot"></span>
-        Final Year Research Project · Machine Learning
+        Final year research project · Machine learning
       </div>
       <h1 class="hero-title">
-        Detect Fake Instagram<br>
-        <em>Accounts Instantly</em>
+        Detect fake Instagram<br>
+        <em>accounts instantly</em>
       </h1>
       <p class="hero-desc">
         InstaGuard uses an XGBoost machine learning model to analyze behavioral patterns
@@ -59,32 +63,32 @@
       </p>
       <div class="hero-actions">
         <a href="index.html" class="btn-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
-          Try the Dashboard
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
+          Try the dashboard
         </a>
-        <a href="methodology.html" class="btn-ghost">View Methodology →</a>
+        <a href="methodology.html" class="btn-ghost">View methodology →</a>
       </div>
 
       <!-- Stats strip -->
       <div class="hero-stats">
         <div class="hstat">
           <span class="hstat-val">99.2%</span>
-          <span class="hstat-lbl">Model Accuracy</span>
+          <span class="hstat-lbl">Model accuracy</span>
         </div>
         <div class="hstat-div"></div>
         <div class="hstat">
           <span class="hstat-val">11</span>
-          <span class="hstat-lbl">Features Analyzed</span>
+          <span class="hstat-lbl">Features analyzed</span>
         </div>
         <div class="hstat-div"></div>
         <div class="hstat">
           <span class="hstat-val">5K</span>
-          <span class="hstat-lbl">Training Samples</span>
+          <span class="hstat-lbl">Training samples</span>
         </div>
         <div class="hstat-div"></div>
         <div class="hstat">
           <span class="hstat-val">&lt;1s</span>
-          <span class="hstat-lbl">Prediction Time</span>
+          <span class="hstat-lbl">Prediction time</span>
         </div>
       </div>
     </div>
@@ -128,7 +132,7 @@
             <div class="dp-profile-card">
               <div class="dp-avatar"></div>
               <div class="dp-profile-info">
-                <div class="dp-sk short" style="margin-bottom:6px"></div>
+                <div class="dp-sk short" style="margin-bottom:5px"></div>
                 <div class="dp-sk med"></div>
               </div>
               <div class="dp-badge real-badge">✓</div>
@@ -146,8 +150,8 @@
             <div class="dp-result-mini">
               <div class="dp-result-icon real-icon">✓</div>
               <div>
-                <div class="dp-sk short" style="margin-bottom:4px;width:80px"></div>
-                <div class="dp-result-label">Real Account</div>
+                <div class="dp-sk short" style="margin-bottom:3px;width:72px"></div>
+                <div class="dp-result-label">Real account</div>
               </div>
               <div class="dp-gauge-mini">
                 <div class="dp-gauge-fill"></div>
@@ -160,11 +164,11 @@
       <!-- Floating badges -->
       <div class="float-badge badge-1">
         <span class="fb-icon">🛡️</span>
-        <span>Real Account · 99% confidence</span>
+        <span>Real account · 99% confidence</span>
       </div>
       <div class="float-badge badge-2">
         <span class="fb-icon">⚠️</span>
-        <span>Fake Detected · High Risk</span>
+        <span>Fake detected · High risk</span>
       </div>
     </div>
   </section>
@@ -173,7 +177,7 @@
   <section class="section how-section">
     <div class="section-inner">
       <div class="section-label-row">
-        <span class="section-chip">How It Works</span>
+        <span class="section-chip">How it works</span>
       </div>
       <h2 class="section-title">Three steps to detection</h2>
       <p class="section-sub">InstaGuard analyzes account metadata patterns that strongly correlate with inauthentic behavior, then uses ML predictions to deliver a final verdict.</p>
@@ -182,25 +186,25 @@
         <div class="step-card">
           <div class="step-num">01</div>
           <div class="step-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </div>
-          <h3>Input Features</h3>
+          <h3>Input features</h3>
           <p>Enter 11 account features manually — including profile picture, follower counts, bio length, and username patterns — or upload a CSV for batch analysis.</p>
         </div>
         <div class="step-card">
           <div class="step-num">02</div>
           <div class="step-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
           </div>
-          <h3>ML Processing</h3>
+          <h3>ML processing</h3>
           <p>An XGBoost model trained on 5,000 samples analyzes 11 behavioral and structural features to compute a fake probability score for each account.</p>
         </div>
         <div class="step-card">
           <div class="step-num">03</div>
           <div class="step-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           </div>
-          <h3>Verdict + Explanation</h3>
+          <h3>Verdict + explanation</h3>
           <p>Receive a real/fake verdict with confidence score, feature influence visualization, and a plain-English explanation of the prediction.</p>
         </div>
       </div>
@@ -218,41 +222,41 @@
       <div class="features-grid">
         <div class="feature-card large">
           <div class="feat-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           </div>
-          <h3>Single Account Analysis</h3>
+          <h3>Single account analysis</h3>
           <p>Input 11 account features including profile picture, privacy status, and external URL — and receive an instant ML prediction with confidence gauge and feature influence visualization.</p>
           <div class="feat-tag">Real-time</div>
         </div>
         <div class="feature-card">
           <div class="feat-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
-          <h3>Bulk File Upload</h3>
+          <h3>Bulk file upload</h3>
           <p>Upload CSV or JSON files to analyze hundreds of accounts simultaneously with exportable results.</p>
           <div class="feat-tag">CSV · JSON</div>
         </div>
         <div class="feature-card">
           <div class="feat-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           </div>
-          <h3>Model Accuracy</h3>
+          <h3>Model accuracy</h3>
           <p>XGBoost classifier trained with GridSearchCV hyperparameter tuning across 5-fold cross-validation, achieving 99.2% accuracy on the held-out test set.</p>
-          <div class="feat-tag">GridSearchCV · 5-Fold CV</div>
+          <div class="feat-tag">GridSearchCV · 5-fold CV</div>
         </div>
         <div class="feature-card">
           <div class="feat-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           </div>
-          <h3>Feature Influence</h3>
+          <h3>Feature influence</h3>
           <p>See exactly which of the 11 features drove the prediction with animated influence bars and a plain-English explanation of why the model decided as it did.</p>
           <div class="feat-tag">Explainable AI</div>
         </div>
         <div class="feature-card">
           <div class="feat-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </div>
-          <h3>Demo Presets</h3>
+          <h3>Demo presets</h3>
           <p>One-click demo accounts — bot, real, and edge case — to explore the model's behavior without manual entry.</p>
           <div class="feat-tag">Interactive</div>
         </div>
@@ -264,15 +268,14 @@
   <section class="section metrics-section">
     <div class="section-inner metrics-inner">
       <div class="metrics-text">
-        <span class="section-chip">Model Performance</span>
-        <h2 class="section-title" style="margin-top:16px">Built on solid research</h2>
-        <p class="section-sub" style="margin-top:12px">
+        <span class="section-chip">Model performance</span>
+        <h2 class="section-title" style="margin-top:14px">Built on solid research</h2>
+        <p class="section-sub" style="margin-top:10px">
           The XGBoost model was trained on 5,000 labeled Instagram profiles with stratified
           splitting, achieving near-perfect performance across all key classification metrics.
-          The model delivers near-perfect performance across all key classification metrics.
         </p>
-        <a href="methodology.html" class="btn-ghost" style="margin-top:28px;display:inline-block">
-          Read Full Methodology →
+        <a href="methodology.html" class="btn-ghost" style="margin-top:24px;display:inline-block">
+          Read full methodology →
         </a>
       </div>
       <div class="metrics-cards">
@@ -293,7 +296,7 @@
         </div>
         <div class="metric-card">
           <div class="mc-val">99.2%</div>
-          <div class="mc-lbl">F1 Score</div>
+          <div class="mc-lbl">F1 score</div>
           <div class="mc-bar"><div class="mc-fill" style="width:99.2%"></div></div>
         </div>
       </div>
@@ -306,8 +309,8 @@
       <h2>Ready to detect fake accounts?</h2>
       <p>Try the live dashboard — no setup required.</p>
       <div class="cta-actions">
-        <a href="index.html" class="btn-primary large">Launch Dashboard →</a>
-        <a href="methodology.html" class="btn-ghost large">Read the Research</a>
+        <a href="index.html" class="btn-primary large">Launch dashboard →</a>
+        <a href="methodology.html" class="btn-ghost large">Read the research</a>
       </div>
     </div>
   </section>
@@ -317,7 +320,7 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <div class="brand-icon small">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         InstaGuard
       </div>
@@ -326,29 +329,10 @@
         <a href="methodology.html">Methodology</a>
         <a href="index.html">Dashboard</a>
       </div>
-      <div class="footer-note">Final Year Project · ML-powered Instagram Account Analysis</div>
+      <div class="footer-note">Final year project · ML-powered Instagram account analysis</div>
     </div>
   </footer>
 
-  <script>
-    window.addEventListener('scroll', () => {
-      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
-    });
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.querySelectorAll('.mc-fill').forEach(bar => {
-            bar.style.transition = 'width 1.1s cubic-bezier(0.16,1,0.3,1)';
-          });
-        }
-      });
-    }, { threshold: 0.3 });
-    document.querySelectorAll('.metrics-cards').forEach(el => observer.observe(el));
-
-    document.querySelectorAll('.step-card, .feature-card, .metric-card').forEach((el, i) => {
-      el.style.animationDelay = `${i * 0.1}s`;
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>

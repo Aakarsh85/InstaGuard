@@ -8,11 +8,9 @@
 :root {
   /* ── Light mode (default — matches original frosted palette) ── */
   --bg:           #eef2ff;
-  --bg2:          #e8edfc;
   --surface:      rgba(255,255,255,0.92);
   --surface2:     rgba(255,255,255,0.75);
   --surface3:     rgba(255,255,255,0.55);
-  --surfaceS:     rgba(255,255,255,0.95);
   --surfaceHover: rgba(255,255,255,0.85);
 
   /* Borders */
@@ -30,7 +28,6 @@
   --indigo:     #6366f1;
   --indigo2:    #6366f1;
   --indigo-dim: rgba(99,102,241,0.08);
-  --blue:       #0ea5e9;
 
   /* Semantic */
   --real:       #059669;
@@ -45,7 +42,6 @@
   /* Shadows */
   --shadow-sm:  0 2px 12px rgba(59,99,247,0.08);
   --shadow:     0 4px 20px rgba(59,99,247,0.10);
-  --shadow-lg:  0 8px 32px rgba(59,99,247,0.14);
 
   /* Timing */
   --ease:       cubic-bezier(0.16,1,0.3,1);
@@ -59,11 +55,9 @@
 /* Dark theme — toggled by JS setting data-theme="dark" on <html> */
 [data-theme="dark"] {
   --bg:           #020617;
-  --bg2:          #0a0f1e;
   --surface:      #0d1524;
   --surface2:     #111827;
   --surface3:     #1a2236;
-  --surfaceS:     #0f1929;
   --surfaceHover: #141e30;
 
   --border:     rgba(255,255,255,0.07);
@@ -87,7 +81,6 @@
 
   --shadow-sm:  0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
   --shadow:     0 4px 20px rgba(0,0,0,0.3);
-  --shadow-lg:  0 8px 32px rgba(0,0,0,0.4);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -264,7 +257,6 @@ body {
   min-height: 100%;
 }
 
-.sidebar-header { }
 .sidebar-header h1 {
   font-family: 'Inter', sans-serif;
   font-size: 1.35rem; font-weight: 700;
@@ -292,7 +284,6 @@ body {
 .block-label-row .block-label { margin-bottom: 0; }
 
 /* Model stats */
-.model-stats-block { }
 .model-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .mstat {
   padding: 13px 12px; border-radius: var(--r);
@@ -318,7 +309,6 @@ body {
 .mstat-lbl { font-size: 0.71rem; color: var(--muted); }
 
 /* History */
-.history-block { }
 .history-list {
   display: flex; flex-direction: column; gap: 5px;
   max-height: 260px; overflow-y: auto;
@@ -1085,8 +1075,6 @@ label {
   display: flex; align-items: center; justify-content: center;
   color: var(--indigo2); margin-bottom: 6px;
 }
-/* Remove float animation */
-@keyframes uploadFloat { from{} to{} }
 .upload-title { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--text); }
 .upload-sub { font-size: 0.81rem; color: var(--muted); }
 .upload-browse { color: var(--indigo2); }
@@ -1250,51 +1238,10 @@ label {
    UTILITIES
    ============================================================ */
 .hidden { display: none !important; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeInLeft {
-  from { opacity: 0; transform: translateX(-12px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes fadeInRight {
-  from { opacity: 0; transform: translateX(12px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes iconPop {
-  from { transform: scale(0.5); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-@keyframes badgePop {
-  from { opacity: 0; transform: scale(0.7); }
-  to   { opacity: 1; transform: scale(1); }
-}
-@keyframes labelSlide {
-  from { opacity: 0; transform: translateX(-8px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes historySlide {
-  from { opacity: 0; transform: translateX(-8px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes tableRowIn {
-  from { opacity: 0; transform: translateX(-6px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes countUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 @keyframes dotPulse {
   0%,100% { opacity: 1; } 50% { opacity: 0.5; }
 }
 .status-dot.online { animation: dotPulse 2s ease-in-out infinite; }
-
-/* Nav animation stubs (keep class refs valid) */
-@keyframes navSlideDown { from { opacity: 0; } to { opacity: 1; } }
-@keyframes sidebarSlide { from { opacity: 0; } to { opacity: 1; } }
 
 /* ============================================================
    RESPONSIVE
