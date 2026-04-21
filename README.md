@@ -17,7 +17,7 @@
 
 ## 🔗 Live Demo
 
-🌐 **Frontend:** https://insta-guard-pi.vercel.app/
+🌐 **Live:** https://insta-guard-pi.vercel.app/
 
 ⚙️ **Backend API:** https://instaguard-backend-2ldg.onrender.com/
 
