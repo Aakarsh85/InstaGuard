@@ -1047,3 +1047,101 @@ body {
 /* ============================================================
    METHODOLOGY PAGE — End
    ============================================================ */
+
+/* Theme toggle (from index.html) */
+.theme-toggle {
+  position: relative; width: 50px; height: 26px;
+  background: var(--glass-2);
+  border: 1px solid var(--glass-border);
+  border-radius: 99px; cursor: pointer;
+  transition: border-color var(--t);
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: rgba(59,99,247,0.3); }
+.theme-toggle::before {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #f59e0b;
+  transition: transform 0.35s var(--ease), background 0.35s; z-index: 2;
+}
+[data-theme="dark"] .theme-toggle::before {
+  transform: translateX(24px);
+  background: #818cf8;
+}
+.theme-toggle .icon-sun, .theme-toggle .icon-moon {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  pointer-events: none; z-index: 1;
+}
+.theme-toggle .icon-sun  { right: 6px; color: var(--muted2); }
+.theme-toggle .icon-moon { left: 6px;  color: var(--muted2); }
+
+/* ============================================================
+   DARK MODE OVERRIDES
+   ============================================================ */
+[data-theme="dark"] {
+  --bg:           #020617;
+  --text:         #f1f5f9;
+  --text2:        #94a3b8;
+  --muted:        #64748b;
+  --muted2:       #475569;
+
+  --cobalt:       #6366f1;
+  --cobalt-2:     #818cf8;
+  --cobalt-d:     #4f46e5;
+  --indigo:       #818cf8;
+  
+  --real:         #10b981;
+  --fake:         #f43f5e;
+
+  /* Glassmorphism equivalents for dark mode */
+  --glass:        rgba(13, 21, 36, 0.68);
+  --glass-2:      rgba(17, 24, 39, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.07);
+
+  --shadow:       0 8px 32px rgba(0,0,0,0.3);
+  --shadow-lg:    0 24px 64px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .nav.scrolled {
+  background: rgba(17, 24, 39, 0.82);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.07), 0 4px 20px rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] .mesh-orb {
+  opacity: 0.15;
+}
+
+[data-theme="dark"] .dp-bar {
+  background: rgba(17, 24, 39, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .dp-sidebar {
+  background: rgba(13, 21, 36, 0.9);
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .dp-profile-card {
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .dp-input {
+  background: rgba(13, 21, 36, 0.9);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .dp-result-mini {
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .footer {
+  background: rgba(13, 21, 36, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .feature-table th {
+  background: rgba(255, 255, 255, 0.05);
+}
