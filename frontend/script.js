@@ -538,7 +538,7 @@ function generateExplanation(payload, result) {
 
   // Profile picture — strongest signal
   if (!hasPic) {
-    flags.push({ text: "No profile picture", type: "suspicious" });
+    flags.push({ text: "No profile picture", type: "warning" });
     reasons.push("no profile picture");
   } else {
     flags.push({ text: "Has profile picture", type: "normal" });
@@ -587,6 +587,8 @@ function generateExplanation(payload, result) {
     reasons.push("no profile bio");
   } else if (bioLen > 40) {
     flags.push({ text: "Detailed bio", type: "normal" });
+  } else {
+    flags.push({ text: "Questionable bio", type: "warning" });
   }
 
   // External URL
@@ -605,7 +607,7 @@ function generateExplanation(payload, result) {
   // Follower / following ratio
   if (following > 0 && followers > 0) {
     const ratio2 = following / followers;
-    if (ratio2 > 5) {
+    if (ratio2 > 5 && followers >= 150) {
       flags.push({ text: `Follows ${ratio2.toFixed(1)}× more than followers`, type: "suspicious" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
     }
