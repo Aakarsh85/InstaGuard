@@ -113,40 +113,40 @@ document.addEventListener('DOMContentLoaded', function () {
 // END THEME PERSISTENCE — your existing script.js code below
 // ============================================================
 // ── DOM refs ──────────────────────────────────────────────
-const manualTab        = document.getElementById("manualTab");
-const bulkTab          = document.getElementById("bulkTab");
-const manualPanel      = document.getElementById("manualPanel");
-const bulkPanel        = document.getElementById("bulkPanel");
+const manualTab = document.getElementById("manualTab");
+const bulkTab = document.getElementById("bulkTab");
+const manualPanel = document.getElementById("manualPanel");
+const bulkPanel = document.getElementById("bulkPanel");
 const predictManualBtn = document.getElementById("predictManualBtn");
-const predictBulkBtn   = document.getElementById("predictBulkBtn");
-const manualSkeleton   = document.getElementById("manualSkeleton");
+const predictBulkBtn = document.getElementById("predictBulkBtn");
+const manualSkeleton = document.getElementById("manualSkeleton");
 const manualResultCard = document.getElementById("manualResultCard");
-const manualError      = document.getElementById("manualError");
-const manualErrorText  = document.getElementById("manualErrorText");
-const bulkSkeleton     = document.getElementById("bulkSkeleton");
-const bulkResults      = document.getElementById("bulkResults");
-const bulkError        = document.getElementById("bulkError");
-const bulkErrorText    = document.getElementById("bulkErrorText");
-const historyList      = document.getElementById("historyList");
-const clearHistoryBtn  = document.getElementById("clearHistory");
-const themeToggle      = document.getElementById("themeToggle");
-const apiStatusText    = document.getElementById("apiStatus");
-const apiStatusDot     = document.querySelector(".status-dot");
-const fileInput        = document.getElementById("fileInput");
+const manualError = document.getElementById("manualError");
+const manualErrorText = document.getElementById("manualErrorText");
+const bulkSkeleton = document.getElementById("bulkSkeleton");
+const bulkResults = document.getElementById("bulkResults");
+const bulkError = document.getElementById("bulkError");
+const bulkErrorText = document.getElementById("bulkErrorText");
+const historyList = document.getElementById("historyList");
+const clearHistoryBtn = document.getElementById("clearHistory");
+const themeToggle = document.getElementById("themeToggle");
+const apiStatusText = document.getElementById("apiStatus");
+const apiStatusDot = document.querySelector(".status-dot");
+const fileInput = document.getElementById("fileInput");
 const fileSelectedInfo = document.getElementById("fileSelectedInfo");
-const uploadZoneInner  = document.getElementById("uploadZoneInner");
+const uploadZoneInner = document.getElementById("uploadZoneInner");
 const selectedFileName = document.getElementById("selectedFileName");
-const removeFileBtn    = document.getElementById("removeFileBtn");
-const uploadZone       = document.getElementById("uploadZone");
+const removeFileBtn = document.getElementById("removeFileBtn");
+const uploadZone = document.getElementById("uploadZone");
 const fetchUsernameBtn = document.getElementById("fetchUsernameBtn");
-const usernameInput    = document.getElementById("usernameInput");
+const usernameInput = document.getElementById("usernameInput");
 
 // ── State ─────────────────────────────────────────────────
 let sessionHistory = [];
-let bulkData       = [];
-let currentPage    = 1;
-const PAGE_SIZE    = 10;
-let currentFilter  = "all";
+let bulkData = [];
+let currentPage = 1;
+const PAGE_SIZE = 10;
+let currentFilter = "all";
 
 // ── Inject spin keyframe ───────────────────────────────────
 const spinStyle = document.createElement("style");
@@ -184,7 +184,7 @@ checkHealth();
   let W, H, particles;
 
   function resize() {
-    W = canvas.width  = window.innerWidth;
+    W = canvas.width = window.innerWidth;
     H = canvas.height = window.innerHeight;
   }
   function makeParticles() {
@@ -218,14 +218,14 @@ checkHealth();
 
 // ── Tab switching ─────────────────────────────────────────
 manualTab?.addEventListener("click", () => switchTab("manual"));
-bulkTab?.addEventListener("click",   () => switchTab("bulk"));
+bulkTab?.addEventListener("click", () => switchTab("bulk"));
 
 function switchTab(mode) {
   if (mode === "manual") {
-    manualTab.classList.add("active");    bulkTab.classList.remove("active");
+    manualTab.classList.add("active"); bulkTab.classList.remove("active");
     manualPanel.classList.remove("hidden"); bulkPanel.classList.add("hidden");
   } else {
-    bulkTab.classList.add("active");    manualTab.classList.remove("active");
+    bulkTab.classList.add("active"); manualTab.classList.remove("active");
     bulkPanel.classList.remove("hidden"); manualPanel.classList.add("hidden");
   }
 }
@@ -234,10 +234,10 @@ function switchTab(mode) {
 document.getElementById("resetForm")?.addEventListener("click", () => {
   // Number inputs
   ["followers", "following", "posts", "description_length",
-   "fullname_words", "nums_length_username", "nums_length_fullname"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.value = ""; clearFieldState(el); }
-  });
+    "fullname_words", "nums_length_username", "nums_length_fullname"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.value = ""; clearFieldState(el); }
+    });
 
   // Toggle inputs
   ["profile_pic", "private", "external_url", "name_eq_username"].forEach(id => {
@@ -257,49 +257,49 @@ document.getElementById("resetForm")?.addEventListener("click", () => {
 
 // ── Validation ─────────────────────────────────────────────
 const fieldRules = {
-  followers:          { max: 1e8 },
-  following:          { max: 1e8 },
-  posts:              { max: 1e6 },
+  followers: { max: 1e8 },
+  following: { max: 1e8 },
+  posts: { max: 1e6 },
   description_length: { max: 150 },
-  fullname_words:     { max: 20 },
+  fullname_words: { max: 20 },
 };
 
 function validateField(input) {
-  const id   = input.id;
+  const id = input.id;
   const wrap = document.getElementById(`wrap_${id}`);
-  const fb   = document.getElementById(`fb_${id}`);
-  const val  = input.value.trim();
+  const fb = document.getElementById(`fb_${id}`);
+  const val = input.value.trim();
   if (!wrap || !fb) return true;
   if (val === "") { clearFieldState(input); fb.textContent = ""; fb.className = "field-feedback"; return true; }
-  const num  = Number(val);
+  const num = Number(val);
   const rule = fieldRules[id];
   if (isNaN(num) || !isFinite(num)) { setInvalid(wrap, fb, "Must be a valid number."); return false; }
-  if (num < 0)                      { setInvalid(wrap, fb, "Cannot be negative.");      return false; }
-  if (rule && num > rule.max)       { setInvalid(wrap, fb, `Max: ${rule.max.toLocaleString()}`); return false; }
-  if (id === "followers" && num === 0)   { setWarn(wrap, fb, "0 followers — suspicious."); return true; }
-  if (id === "following" && num > 5000)  { setWarn(wrap, fb, "High following — possible bot."); return true; }
+  if (num < 0) { setInvalid(wrap, fb, "Cannot be negative."); return false; }
+  if (rule && num > rule.max) { setInvalid(wrap, fb, `Max: ${rule.max.toLocaleString()}`); return false; }
+  if (id === "followers" && num === 0) { setWarn(wrap, fb, "0 followers — suspicious."); return true; }
+  if (id === "following" && num > 5000) { setWarn(wrap, fb, "High following — possible bot."); return true; }
   setValid(wrap, fb, "✓");
   return true;
 }
 
 function validateRatio(input) {
-  const id   = input.id;
+  const id = input.id;
   const wrap = document.getElementById(`wrap_${id}`);
-  const fb   = document.getElementById(`fb_${id}`);
-  const val  = input.value.trim();
+  const fb = document.getElementById(`fb_${id}`);
+  const val = input.value.trim();
   if (!wrap || !fb) return true;
   if (val === "") { clearFieldState(input); fb.textContent = ""; fb.className = "field-feedback"; return true; }
   const num = Number(val);
   if (isNaN(num) || !isFinite(num)) { setInvalid(wrap, fb, "Must be 0.0 – 1.0"); return false; }
-  if (num < 0 || num > 1)           { setInvalid(wrap, fb, "Value must be between 0 and 1"); return false; }
+  if (num < 0 || num > 1) { setInvalid(wrap, fb, "Value must be between 0 and 1"); return false; }
   if (num > 0.6) { setWarn(wrap, fb, "High ratio — unusual for real accounts."); return true; }
   setValid(wrap, fb, "✓");
   return true;
 }
 
-function setValid  (w, f, m) { w.className = "field-input-wrap valid";   f.textContent = m; f.className = "field-feedback valid-msg"; }
+function setValid(w, f, m) { w.className = "field-input-wrap valid"; f.textContent = m; f.className = "field-feedback valid-msg"; }
 function setInvalid(w, f, m) { w.className = "field-input-wrap invalid"; f.textContent = m; f.className = "field-feedback invalid-msg"; }
-function setWarn   (w, f, m) { w.className = "field-input-wrap";          f.textContent = "⚠ " + m; f.className = "field-feedback invalid-msg"; }
+function setWarn(w, f, m) { w.className = "field-input-wrap"; f.textContent = "⚠ " + m; f.className = "field-feedback invalid-msg"; }
 
 function clearFieldState(input) {
   const wrap = document.getElementById(`wrap_${input.id}`);
@@ -323,22 +323,22 @@ function validateAll() {
 function updatePreview() {
   const followers = safeNum(document.getElementById("followers")?.value);
   const following = safeNum(document.getElementById("following")?.value);
-  const posts     = safeNum(document.getElementById("posts")?.value);
-  const bioLen    = safeNum(document.getElementById("description_length")?.value);
-  const username  = usernameInput?.value.trim() || "";
-  const ratio     = safeNum(document.getElementById("nums_length_username")?.value);
-  const hasPic    = document.getElementById("profile_pic")?.checked || false;
+  const posts = safeNum(document.getElementById("posts")?.value);
+  const bioLen = safeNum(document.getElementById("description_length")?.value);
+  const username = usernameInput?.value.trim() || "";
+  const ratio = safeNum(document.getElementById("nums_length_username")?.value);
+  const hasPic = document.getElementById("profile_pic")?.checked || false;
 
-  document.getElementById("previewPosts").textContent     = fmt(posts);
+  document.getElementById("previewPosts").textContent = fmt(posts);
   document.getElementById("previewFollowers").textContent = fmt(followers);
   document.getElementById("previewFollowing").textContent = fmt(following);
-  document.getElementById("previewName").textContent      = username ? `@${username}` : "@username";
+  document.getElementById("previewName").textContent = username ? `@${username}` : "@username";
 
   const bioEl = document.getElementById("previewBio");
   if (bioEl) {
-    if (bioLen === 0)     bioEl.textContent = "No bio added.";
+    if (bioLen === 0) bioEl.textContent = "No bio added.";
     else if (bioLen < 20) bioEl.textContent = `Short bio (${bioLen} chars)`;
-    else                  bioEl.textContent = `Has a bio of ${bioLen} characters.`;
+    else bioEl.textContent = `Has a bio of ${bioLen} characters.`;
   }
 
 
@@ -347,12 +347,12 @@ function updatePreview() {
 // Now also factors in profile picture presence
 function computeRiskSignal(followers, following, posts, bioLen, ratio, hasPic) {
   let score = 0;
-  if (!hasPic)          score += 0.35;   // No profile pic — strong signal
-  if (followers < 20)   score += 0.25;
+  if (!hasPic) score += 0.35;   // No profile pic — strong signal
+  if (followers < 20) score += 0.25;
   if (following > 2000) score += 0.20;
-  if (posts < 3)        score += 0.15;
-  if (bioLen < 5)       score += 0.10;
-  if (ratio > 0.5)      score += 0.20;
+  if (posts < 3) score += 0.15;
+  if (bioLen < 5) score += 0.10;
+  if (ratio > 0.5) score += 0.20;
   return Math.min(score, 1);
 }
 
@@ -361,32 +361,32 @@ function resetPreview() {
     const el = document.getElementById(id);
     if (el) el.textContent = "0";
   });
-  const bio    = document.getElementById("previewBio");
-  const name   = document.getElementById("previewName");
-  const badge  = document.getElementById("previewBadge");
+  const bio = document.getElementById("previewBio");
+  const name = document.getElementById("previewName");
+  const badge = document.getElementById("previewBadge");
   const avatar = document.getElementById("previewAvatar");
-  if (bio)    bio.textContent  = "Bio will appear here...";
-  if (name)   name.textContent = "@username";
-  if (badge)  { badge.innerHTML = "?"; badge.className = "profile-preview-badge"; }
+  if (bio) bio.textContent = "Bio will appear here...";
+  if (name) name.textContent = "@username";
+  if (badge) { badge.innerHTML = "?"; badge.className = "profile-preview-badge"; }
   if (avatar) { avatar.style.borderColor = ""; avatar.style.boxShadow = ""; avatar.style.background = ""; }
 }
 
 function updatePreviewBadge(label) {
-  const badge  = document.getElementById("previewBadge");
+  const badge = document.getElementById("previewBadge");
   const avatar = document.getElementById("previewAvatar");
   if (!badge || !avatar) return;
   if (label === "Real Account") {
-    badge.innerHTML         = "✓";
-    badge.className         = "profile-preview-badge real-badge";
+    badge.innerHTML = "✓";
+    badge.className = "profile-preview-badge real-badge";
     avatar.style.background = "linear-gradient(135deg, rgba(5,150,105,0.12), rgba(5,150,105,0.04))";
     avatar.style.borderColor = "rgba(5,150,105,0.5)";
-    avatar.style.boxShadow   = "0 0 14px rgba(5,150,105,0.15)";
+    avatar.style.boxShadow = "0 0 14px rgba(5,150,105,0.15)";
   } else {
-    badge.innerHTML         = "✕";
-    badge.className         = "profile-preview-badge fake-badge";
+    badge.innerHTML = "✕";
+    badge.className = "profile-preview-badge fake-badge";
     avatar.style.background = "linear-gradient(135deg, rgba(225,29,72,0.12), rgba(225,29,72,0.04))";
     avatar.style.borderColor = "rgba(225,29,72,0.5)";
-    avatar.style.boxShadow   = "0 0 14px rgba(225,29,72,0.2)";
+    avatar.style.boxShadow = "0 0 14px rgba(225,29,72,0.2)";
   }
 }
 
@@ -400,7 +400,7 @@ function drawGauge(percentage, isFake) {
 
   const cx = W / 2, cy = H - 10, r = 78;
   const startAngle = Math.PI;
-  const fillAngle  = startAngle + (percentage / 100) * Math.PI;
+  const fillAngle = startAngle + (percentage / 100) * Math.PI;
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
 
   ctx.beginPath();
@@ -410,7 +410,7 @@ function drawGauge(percentage, isFake) {
 
   const grad = ctx.createLinearGradient(cx - r, cy, cx + r, cy);
   if (isFake) { grad.addColorStop(0, "#f59e0b"); grad.addColorStop(1, "#e11d48"); }
-  else        { grad.addColorStop(0, "#059669"); grad.addColorStop(1, "#3b63f7"); }
+  else { grad.addColorStop(0, "#059669"); grad.addColorStop(1, "#3b63f7"); }
 
   ctx.beginPath();
   ctx.arc(cx, cy, r, startAngle, fillAngle);
@@ -419,24 +419,24 @@ function drawGauge(percentage, isFake) {
   const tipX = cx + r * Math.cos(fillAngle);
   const tipY = cy + r * Math.sin(fillAngle);
   ctx.beginPath(); ctx.arc(tipX, tipY, 5, 0, Math.PI * 2);
-  ctx.fillStyle  = isFake ? "#e11d48" : "#059669";
+  ctx.fillStyle = isFake ? "#e11d48" : "#059669";
   ctx.shadowBlur = 12; ctx.shadowColor = ctx.fillStyle;
   ctx.fill(); ctx.shadowBlur = 0;
 }
 
 // ── Feature importance bars — updated for 11 new features ─
 const FEATURE_LABELS = {
-  "profile pic":           "Profile Picture",
-  "nums/length username":  "Username Num Ratio",
-  "fullname words":        "Full Name Words",
-  "nums/length fullname":  "Full Name Num Ratio",
-  "name==username":        "Name = Username",
-  "description length":    "Bio Length",
-  "external URL":          "External URL",
-  "private":               "Private Account",
-  "#posts":                "Posts",
-  "#followers":            "Followers",
-  "#follows":              "Following",
+  "profile pic": "Profile Picture",
+  "nums/length username": "Username Num Ratio",
+  "fullname words": "Full Name Words",
+  "nums/length fullname": "Full Name Num Ratio",
+  "name==username": "Name = Username",
+  "description length": "Bio Length",
+  "external URL": "External URL",
+  "private": "Private Account",
+  "#posts": "Posts",
+  "#followers": "Followers",
+  "#follows": "Following",
 };
 
 function renderFeatureImportance(payload, result) {
@@ -444,23 +444,23 @@ function renderFeatureImportance(payload, result) {
   if (!container) return;
 
   const isFake = result.prediction === 1;
-  const score  = result.confidence.score;
+  const score = result.confidence.score;
 
   // Heuristic influence scores for each feature
   const heuristics = [
-    { key: "profile pic",          val: payload["profile pic"],          inf: payload["profile pic"] === 0 ? 0.9 : 0.1 },
-    { key: "#followers",           val: payload["#followers"],           inf: isFake ? (payload["#followers"] < 50 ? 0.85 : 0.3) : (payload["#followers"] > 500 ? 0.8 : 0.4) },
-    { key: "#follows",             val: payload["#follows"],             inf: isFake ? (payload["#follows"] > 2000 ? 0.9 : 0.4) : (payload["#follows"] < 500 ? 0.6 : 0.3) },
-    { key: "#posts",               val: payload["#posts"],               inf: isFake ? (payload["#posts"] < 5 ? 0.8 : 0.3) : (payload["#posts"] > 30 ? 0.7 : 0.35) },
+    { key: "profile pic", val: payload["profile pic"], inf: payload["profile pic"] === 0 ? 0.9 : 0.1 },
+    { key: "#followers", val: payload["#followers"], inf: isFake ? (payload["#followers"] < 50 ? 0.85 : 0.3) : (payload["#followers"] > 500 ? 0.8 : 0.4) },
+    { key: "#follows", val: payload["#follows"], inf: isFake ? (payload["#follows"] > 2000 ? 0.9 : 0.4) : (payload["#follows"] < 500 ? 0.6 : 0.3) },
+    { key: "#posts", val: payload["#posts"], inf: isFake ? (payload["#posts"] < 5 ? 0.8 : 0.3) : (payload["#posts"] > 30 ? 0.7 : 0.35) },
     { key: "nums/length username", val: payload["nums/length username"], inf: payload["nums/length username"] > 0.4 ? 0.85 : payload["nums/length username"] > 0.2 ? 0.5 : 0.15 },
-    { key: "description length",   val: payload["description length"],   inf: isFake ? (payload["description length"] < 5 ? 0.7 : 0.25) : (payload["description length"] > 30 ? 0.65 : 0.3) },
-    { key: "fullname words",       val: payload["fullname words"],       inf: isFake ? (payload["fullname words"] === 0 ? 0.7 : 0.3) : (payload["fullname words"] >= 2 ? 0.6 : 0.3) },
+    { key: "description length", val: payload["description length"], inf: isFake ? (payload["description length"] < 5 ? 0.7 : 0.25) : (payload["description length"] > 30 ? 0.65 : 0.3) },
+    { key: "fullname words", val: payload["fullname words"], inf: isFake ? (payload["fullname words"] === 0 ? 0.7 : 0.3) : (payload["fullname words"] >= 2 ? 0.6 : 0.3) },
     { key: "nums/length fullname", val: payload["nums/length fullname"], inf: payload["nums/length fullname"] > 0.3 ? 0.75 : 0.15 },
-    { key: "name==username",       val: payload["name==username"],       inf: payload["name==username"] === 1 ? 0.45 : 0.1 },
-    { key: "external URL",         val: payload["external URL"],         inf: payload["external URL"] === 1 ? 0.15 : 0.35 },
-    { key: "private",              val: payload["private"],              inf: 0.2 },
+    { key: "name==username", val: payload["name==username"], inf: payload["name==username"] === 1 ? 0.45 : 0.1 },
+    { key: "external URL", val: payload["external URL"], inf: payload["external URL"] === 1 ? 0.15 : 0.35 },
+    { key: "private", val: payload["private"], inf: 0.2 },
   ].map(f => ({ ...f, influence: Math.min(f.inf * score + 0.05, 1.0) }))
-   .sort((a, b) => b.influence - a.influence);
+    .sort((a, b) => b.influence - a.influence);
 
   container.innerHTML = heuristics.map(h => {
     const pct = Math.round(h.influence * 100);
@@ -485,15 +485,15 @@ function renderHybridBreakdown(breakdown) {
   if (!breakdown || !el) return;
   el.style.display = "block";
 
-  const mlPct    = Math.round((breakdown.ml?.fake_probability || 0) * 100);
-  const rulePct  = Math.round((breakdown.rules?.score || 0) * 100);
+  const mlPct = Math.round((breakdown.ml?.fake_probability || 0) * 100);
+  const rulePct = Math.round((breakdown.rules?.score || 0) * 100);
   const finalPct = Math.round(
     ((breakdown.ml?.fake_probability || 0) * 0.6 +
-     (breakdown.rules?.score         || 0) * 0.4) * 100
+      (breakdown.rules?.score || 0) * 0.4) * 100
   );
 
-  document.getElementById("hybridBarML").style.width    = mlPct + "%";
-  document.getElementById("hybridValML").textContent    = mlPct + "%";
+  document.getElementById("hybridBarML").style.width = mlPct + "%";
+  document.getElementById("hybridValML").textContent = mlPct + "%";
   document.getElementById("hybridBarRules").style.width = rulePct + "%";
   document.getElementById("hybridValRules").textContent = rulePct + "%";
   document.getElementById("hybridBarFinal").style.width = finalPct + "%";
@@ -522,19 +522,19 @@ function renderHybridBreakdown(breakdown) {
 // ── Plain-English Explanation — updated for new features ──
 function generateExplanation(payload, result) {
   const isFake = result.prediction === 1;
-  const level  = result.confidence.level;
-  const pct    = result.confidence.percentage.toFixed(1);
-  const flags  = [];
+  const level = result.confidence.level;
+  const pct = result.confidence.percentage.toFixed(1);
+  const flags = [];
   const reasons = [];
 
-  const followers = payload["#followers"]           || 0;
-  const following = payload["#follows"]             || 0;
-  const posts     = payload["#posts"]               || 0;
-  const bioLen    = payload["description length"]   || 0;
-  const ratio     = payload["nums/length username"] || 0;
-  const hasPic    = payload["profile pic"]          === 1;
-  const hasUrl    = payload["external URL"]         === 1;
-  const fnWords   = payload["fullname words"]       || 0;
+  const followers = payload["#followers"] || 0;
+  const following = payload["#follows"] || 0;
+  const posts = payload["#posts"] || 0;
+  const bioLen = payload["description length"] || 0;
+  const ratio = payload["nums/length username"] || 0;
+  const hasPic = payload["profile pic"] === 1;
+  const hasUrl = payload["external URL"] === 1;
+  const fnWords = payload["fullname words"] || 0;
 
   // Profile picture — strongest signal
   if (!hasPic) {
@@ -610,6 +610,12 @@ function generateExplanation(payload, result) {
     if (ratio2 > 5 && followers >= 150) {
       flags.push({ text: `Follows ${ratio2.toFixed(1)}× more than followers`, type: "suspicious" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
+    } else if (ratio2 > 2 && followers >= 100) {
+      flags.push({ text: `Follows ${ratio2.toFixed(1)}× more than followers`, type: "warning" });
+      reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
+    } else {
+      flags.push({ text: `Follows ${ratio2.toFixed(1)}× more than followers`, type: "normal" });
+      reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
     }
   }
 
@@ -630,7 +636,7 @@ function generateExplanation(payload, result) {
   }
 
   const explanationEl = document.getElementById("explanationText");
-  const flagsEl       = document.getElementById("explanationFlags");
+  const flagsEl = document.getElementById("explanationFlags");
   if (explanationEl) explanationEl.innerHTML = text;
   if (flagsEl) {
     flagsEl.innerHTML = flags.slice(0, 8).map((f, i) =>
@@ -642,11 +648,11 @@ function generateExplanation(payload, result) {
 // ── Render manual result ───────────────────────────────────
 function renderManualResult(result, payload) {
   const isFake = result.prediction === 1;
-  const pct    = result.confidence.percentage;
-  const level  = result.confidence.level;
+  const pct = result.confidence.percentage;
+  const level = result.confidence.level;
 
   const iconWrap = document.getElementById("resultIconWrap");
-  const icon     = document.getElementById("resultIcon");
+  const icon = document.getElementById("resultIcon");
   if (iconWrap) iconWrap.className = `result-icon-wrap ${isFake ? "fake-icon" : "real-icon"}`;
   if (icon) {
     icon.innerHTML = isFake
@@ -659,13 +665,13 @@ function renderManualResult(result, payload) {
 
   const badge = document.getElementById("resultBadge");
   if (badge) {
-    if      (level === "High"   && isFake)  { badge.className = "result-badge fake"; badge.textContent = "High Risk"; }
-    else if (level === "High"   && !isFake) { badge.className = "result-badge real"; badge.textContent = "Verified Real"; }
-    else if (level === "Medium" && isFake)  { badge.className = "result-badge warn"; badge.textContent = "Medium Risk"; }
+    if (level === "High" && isFake) { badge.className = "result-badge fake"; badge.textContent = "High Risk"; }
+    else if (level === "High" && !isFake) { badge.className = "result-badge real"; badge.textContent = "Verified Real"; }
+    else if (level === "Medium" && isFake) { badge.className = "result-badge warn"; badge.textContent = "Medium Risk"; }
     else if (level === "Medium" && !isFake) { badge.className = "result-badge real"; badge.textContent = "Likely Real"; }
-    else if (level === "Low"    && isFake)  { badge.className = "result-badge warn"; badge.textContent = "Low Risk"; }
-    else if (level === "Low"    && !isFake) { badge.className = "result-badge real"; badge.textContent = "Probably Real"; }
-    else                                    { badge.className = "result-badge";      badge.textContent = level; }
+    else if (level === "Low" && isFake) { badge.className = "result-badge warn"; badge.textContent = "Low Risk"; }
+    else if (level === "Low" && !isFake) { badge.className = "result-badge real"; badge.textContent = "Probably Real"; }
+    else { badge.className = "result-badge"; badge.textContent = level; }
   }
 
   const card = document.getElementById("manualResultCard");
@@ -683,7 +689,7 @@ function renderManualResult(result, payload) {
     if (!startTime) startTime = ts;
     const progress = Math.min((ts - startTime) / duration, 1);
     const ease = 1 - Math.pow(1 - progress, 3);
-    const cur  = Math.round(ease * pct);
+    const cur = Math.round(ease * pct);
     if (gaugePctEl) gaugePctEl.textContent = cur + "%";
     drawGauge(cur, isFake);
     if (progress < 1) requestAnimationFrame(animateGauge);
@@ -782,12 +788,12 @@ async function predictFile() {
 function renderBulkResults(summary, predictions) {
   const el = id => document.getElementById(id);
   if (el("bssTotal")) el("bssTotal").textContent = summary.total ?? 0;
-  if (el("bssReal"))  el("bssReal").textContent  = summary.real  ?? 0;
-  if (el("bssFake"))  el("bssFake").textContent  = summary.fake  ?? 0;
-  if (el("bssConf"))  el("bssConf").textContent  =
+  if (el("bssReal")) el("bssReal").textContent = summary.real ?? 0;
+  if (el("bssFake")) el("bssFake").textContent = summary.fake ?? 0;
+  if (el("bssConf")) el("bssConf").textContent =
     summary.average_confidence ? (summary.average_confidence * 100).toFixed(1) + "%" : "—";
 
-  const total   = summary.total || 1;
+  const total = summary.total || 1;
   const realPct = ((summary.real / total) * 100).toFixed(1);
   const fakePct = ((summary.fake / total) * 100).toFixed(1);
   setTimeout(() => {
@@ -817,12 +823,12 @@ function renderTable() {
   if (!tbody) return;
 
   tbody.innerHTML = pageItems.map((r, i) => {
-    const idx    = (currentPage - 1) * PAGE_SIZE + i + 1;
+    const idx = (currentPage - 1) * PAGE_SIZE + i + 1;
     const isFake = r.prediction === 1;
-    const pct    = r.confidence.percentage.toFixed(1);
-    const realP  = r.probabilities.real != null ? (r.probabilities.real * 100).toFixed(1) : "—";
-    const fakeP  = r.probabilities.fake != null ? (r.probabilities.fake * 100).toFixed(1) : "—";
-    const lvl    = r.confidence.level.toLowerCase();
+    const pct = r.confidence.percentage.toFixed(1);
+    const realP = r.probabilities.real != null ? (r.probabilities.real * 100).toFixed(1) : "—";
+    const fakeP = r.probabilities.fake != null ? (r.probabilities.fake * 100).toFixed(1) : "—";
+    const lvl = r.confidence.level.toLowerCase();
     return `
       <tr>
         <td style="color:var(--muted2)">${idx}</td>
@@ -857,7 +863,7 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
     document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     currentFilter = btn.dataset.filter;
-    currentPage   = 1;
+    currentPage = 1;
     renderTable();
   });
 });
@@ -873,10 +879,10 @@ function exportResults() {
     r.probabilities.fake != null ? (r.probabilities.fake * 100).toFixed(2) : "",
     r.confidence.level
   ]);
-  const csv  = [headers, ...rows].map(r => r.join(",")).join("\n");
+  const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv" });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
   a.href = url; a.download = "instaguard_predictions.csv"; a.click();
   URL.revokeObjectURL(url);
 }
@@ -884,10 +890,10 @@ function exportResults() {
 // ── Session history ────────────────────────────────────────
 function addToHistory(result, payload) {
   const item = {
-    label:      result.label,
+    label: result.label,
     confidence: result.confidence.percentage.toFixed(1),
-    isFake:     result.prediction === 1,
-    time:       new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    isFake: result.prediction === 1,
+    time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     payload,
     result
   };
@@ -928,13 +934,13 @@ function replayHistory(idx) {
 
   // Re-populate number inputs
   const numMap = {
-    "followers":           "#followers",
-    "following":           "#follows",
-    "posts":               "#posts",
-    "description_length":  "description length",
-    "fullname_words":      "fullname words",
-    "nums_length_username":"nums/length username",
-    "nums_length_fullname":"nums/length fullname",
+    "followers": "#followers",
+    "following": "#follows",
+    "posts": "#posts",
+    "description_length": "description length",
+    "fullname_words": "fullname words",
+    "nums_length_username": "nums/length username",
+    "nums_length_fullname": "nums/length fullname",
   };
   Object.entries(numMap).forEach(([elId, payloadKey]) => {
     const el = document.getElementById(elId);
@@ -943,9 +949,9 @@ function replayHistory(idx) {
 
   // Re-populate toggles
   const toggleMap = {
-    profile_pic:      "profile pic",
-    private:          "private",
-    external_url:     "external URL",
+    profile_pic: "profile pic",
+    private: "private",
+    external_url: "external URL",
     name_eq_username: "name==username",
   };
   Object.entries(toggleMap).forEach(([elId, payloadKey]) => {
@@ -1025,8 +1031,8 @@ Rules:
       })
     });
 
-    const data  = await response.json();
-    const raw   = data.content?.map(i => i.text || "").join("") || "";
+    const data = await response.json();
+    const raw = data.content?.map(i => i.text || "").join("") || "";
     const clean = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(clean);
 
@@ -1100,7 +1106,7 @@ removeFileBtn?.addEventListener("click", e => {
 function show(el) { if (el) el.classList.remove("hidden"); }
 function hide(el) { if (el) el.classList.add("hidden"); }
 function showManualError(msg) { if (manualErrorText) manualErrorText.textContent = msg; show(manualError); }
-function showBulkError(msg)   { if (bulkErrorText)   bulkErrorText.textContent   = msg; show(bulkError);   }
+function showBulkError(msg) { if (bulkErrorText) bulkErrorText.textContent = msg; show(bulkError); }
 function safeNum(val) { const n = Number(val); return isFinite(n) ? n : 0; }
 function fmt(n) {
   if (n >= 1e6) return (n / 1e6).toFixed(1) + "M";
@@ -1123,16 +1129,16 @@ function fmt(n) {
 // checkbox in index.html. Updates the ON/OFF badge pill and the
 // short status label text inside each toggle row.
 function updateToggleBadge(checkbox) {
-  const id    = checkbox.id;
+  const id = checkbox.id;
   const badge = document.getElementById(id + '_badge');
   const label = document.getElementById(id + '_label');
 
   // OFF label → ON label for each toggle
   const labels = {
-    profile_pic:      ['No profile picture', 'Has profile picture'],
-    private:          ['Public account',     'Private account'],
-    external_url:     ['No external URL',    'Has external URL'],
-    name_eq_username: ['Name ≠ Username',    'Name = Username'],
+    profile_pic: ['No profile picture', 'Has profile picture'],
+    private: ['Public account', 'Private account'],
+    external_url: ['No external URL', 'Has external URL'],
+    name_eq_username: ['Name ≠ Username', 'Name = Username'],
   };
 
   if (badge) {
@@ -1152,21 +1158,21 @@ function updateToggleBadge(checkbox) {
 function buildPayload() {
   return {
     // Binary toggles — 1 if checked, 0 if not
-    "profile pic":          document.getElementById('profile_pic').checked ? 1 : 0,
-    "external URL":         document.getElementById('external_url').checked ? 1 : 0,
-    "private":              document.getElementById('private').checked ? 1 : 0,
-    "name==username":       document.getElementById('name_eq_username').checked ? 1 : 0,
+    "profile pic": document.getElementById('profile_pic').checked ? 1 : 0,
+    "external URL": document.getElementById('external_url').checked ? 1 : 0,
+    "private": document.getElementById('private').checked ? 1 : 0,
+    "name==username": document.getElementById('name_eq_username').checked ? 1 : 0,
 
     // Numeric ratio fields (0.0 – 1.0)
     "nums/length username": parseFloat(document.getElementById('nums_length_username').value) || 0,
     "nums/length fullname": parseFloat(document.getElementById('nums_length_fullname').value) || 0,
 
     // Numeric count fields
-    "fullname words":       parseFloat(document.getElementById('fullname_words').value)    || 0,
-    "description length":   parseFloat(document.getElementById('description_length').value) || 0,
-    "#posts":               parseFloat(document.getElementById('posts').value)              || 0,
-    "#followers":           parseFloat(document.getElementById('followers').value)          || 0,
-    "#follows":             parseFloat(document.getElementById('following').value)          || 0,
+    "fullname words": parseFloat(document.getElementById('fullname_words').value) || 0,
+    "description length": parseFloat(document.getElementById('description_length').value) || 0,
+    "#posts": parseFloat(document.getElementById('posts').value) || 0,
+    "#followers": parseFloat(document.getElementById('followers').value) || 0,
+    "#follows": parseFloat(document.getElementById('following').value) || 0,
   };
 }
 
@@ -1182,24 +1188,24 @@ function renderHybridBreakdown(breakdown) {
   el.style.display = 'block';
 
   // Convert 0-1 probabilities to integer percentages for display
-  const mlPct    = Math.round((breakdown.ml?.fake_probability || 0) * 100);
-  const rulePct  = Math.round((breakdown.rules?.score        || 0) * 100);
+  const mlPct = Math.round((breakdown.ml?.fake_probability || 0) * 100);
+  const rulePct = Math.round((breakdown.rules?.score || 0) * 100);
   const finalPct = Math.round(
     ((breakdown.ml?.fake_probability || 0) * 0.6 +   // 60% ML weight
-     (breakdown.rules?.score         || 0) * 0.4)    // 40% rules weight
+      (breakdown.rules?.score || 0) * 0.4)    // 40% rules weight
     * 100
   );
 
   // Animate the three progress bars
-  document.getElementById('hybridBarML').style.width    = mlPct    + '%';
-  document.getElementById('hybridValML').textContent    = mlPct    + '%';
-  document.getElementById('hybridBarRules').style.width = rulePct  + '%';
-  document.getElementById('hybridValRules').textContent = rulePct  + '%';
+  document.getElementById('hybridBarML').style.width = mlPct + '%';
+  document.getElementById('hybridValML').textContent = mlPct + '%';
+  document.getElementById('hybridBarRules').style.width = rulePct + '%';
+  document.getElementById('hybridValRules').textContent = rulePct + '%';
   document.getElementById('hybridBarFinal').style.width = finalPct + '%';
   document.getElementById('hybridValFinal').textContent = finalPct + '%';
 
   // Render fired rules list
-  const list  = document.getElementById('rulesFiredList');
+  const list = document.getElementById('rulesFiredList');
   list.innerHTML = '';
   const rules = breakdown.rules?.rules_fired || [];
 
@@ -1265,11 +1271,11 @@ function loadPreset(type) {
 
   // Set the 7 numeric inputs
   const numMap = {
-    followers:            'followers',
-    following:            'following',
-    posts:                'posts',
-    description_length:   'description_length',
-    fullname_words:       'fullname_words',
+    followers: 'followers',
+    following: 'following',
+    posts: 'posts',
+    description_length: 'description_length',
+    fullname_words: 'fullname_words',
     nums_length_username: 'nums_length_username',
     nums_length_fullname: 'nums_length_fullname',
   };
@@ -1292,20 +1298,20 @@ function loadPreset(type) {
 // These are called from inline HTML attributes (onclick, onchange)
 // so they must be on window. Add these lines alongside the existing
 // window.* assignments at the bottom of script.js.
-window.updateToggleBadge  = updateToggleBadge;
-window.buildPayload       = buildPayload;
+window.updateToggleBadge = updateToggleBadge;
+window.buildPayload = buildPayload;
 window.renderHybridBreakdown = renderHybridBreakdown;
-window.loadPreset         = loadPreset;
+window.loadPreset = loadPreset;
 
 // ── Expose globals ─────────────────────────────────────────
-window.predictManual   = predictManual;
-window.predictFile     = predictFile;
-window.exportResults   = exportResults;
-window.goToPage        = goToPage;
-window.replayHistory   = replayHistory;
-window.loadPreset      = loadPreset;
-window.fetchUsername   = fetchUsername;
-window.validateField   = validateField;
-window.validateRatio   = validateRatio;
-window.updatePreview   = updatePreview;
+window.predictManual = predictManual;
+window.predictFile = predictFile;
+window.exportResults = exportResults;
+window.goToPage = goToPage;
+window.replayHistory = replayHistory;
+window.loadPreset = loadPreset;
+window.fetchUsername = fetchUsername;
+window.validateField = validateField;
+window.validateRatio = validateRatio;
+window.updatePreview = updatePreview;
 window.updateToggleBadge = updateToggleBadge;
