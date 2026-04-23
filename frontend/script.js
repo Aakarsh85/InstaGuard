@@ -341,24 +341,7 @@ function updatePreview() {
     else                  bioEl.textContent = `Has a bio of ${bioLen} characters.`;
   }
 
-  // Live avatar border
-  const avatar = document.getElementById("previewAvatar");
-  if (avatar) {
-    const risk = computeRiskSignal(followers, following, posts, bioLen, ratio, hasPic);
-    if (risk > 0.65) {
-      avatar.style.borderColor = "rgba(225,29,72,0.5)";
-      avatar.style.boxShadow   = "0 0 14px rgba(225,29,72,0.2)";
-    } else if (risk > 0.35) {
-      avatar.style.borderColor = "rgba(217,119,6,0.5)";
-      avatar.style.boxShadow   = "0 0 14px rgba(217,119,6,0.15)";
-    } else if (followers > 0 || following > 0) {
-      avatar.style.borderColor = "rgba(5,150,105,0.5)";
-      avatar.style.boxShadow   = "0 0 14px rgba(5,150,105,0.15)";
-    } else {
-      avatar.style.borderColor = "";
-      avatar.style.boxShadow   = "";
-    }
-  }
+
 }
 
 // Now also factors in profile picture presence
@@ -396,10 +379,14 @@ function updatePreviewBadge(label) {
     badge.innerHTML         = "✓";
     badge.className         = "profile-preview-badge real-badge";
     avatar.style.background = "linear-gradient(135deg, rgba(5,150,105,0.12), rgba(5,150,105,0.04))";
+    avatar.style.borderColor = "rgba(5,150,105,0.5)";
+    avatar.style.boxShadow   = "0 0 14px rgba(5,150,105,0.15)";
   } else {
     badge.innerHTML         = "✕";
     badge.className         = "profile-preview-badge fake-badge";
     avatar.style.background = "linear-gradient(135deg, rgba(225,29,72,0.12), rgba(225,29,72,0.04))";
+    avatar.style.borderColor = "rgba(225,29,72,0.5)";
+    avatar.style.boxShadow   = "0 0 14px rgba(225,29,72,0.2)";
   }
 }
 
