@@ -444,25 +444,141 @@ function renderFeatureImportance(payload, result) {
   if (!container) return;
 
   const isFake = result.prediction === 1;
-  const score = result.confidence.score;
+  const confidence = result.confidence.percentage / 100; // 0–1
 
-  // Heuristic influence scores for each feature
-  const heuristics = [
-    { key: "profile pic", val: payload["profile pic"], inf: payload["profile pic"] === 0 ? 0.9 : 0.1 },
-    { key: "#followers", val: payload["#followers"], inf: isFake ? (payload["#followers"] < 50 ? 0.85 : 0.3) : (payload["#followers"] > 500 ? 0.8 : 0.4) },
-    { key: "#follows", val: payload["#follows"], inf: isFake ? (payload["#follows"] > 2000 ? 0.9 : 0.4) : (payload["#follows"] < 500 ? 0.6 : 0.3) },
-    { key: "#posts", val: payload["#posts"], inf: isFake ? (payload["#posts"] < 5 ? 0.8 : 0.3) : (payload["#posts"] > 30 ? 0.7 : 0.35) },
-    { key: "nums/length username", val: payload["nums/length username"], inf: payload["nums/length username"] > 0.4 ? 0.85 : payload["nums/length username"] > 0.2 ? 0.5 : 0.15 },
-    { key: "description length", val: payload["description length"], inf: isFake ? (payload["description length"] < 5 ? 0.7 : 0.25) : (payload["description length"] > 30 ? 0.65 : 0.3) },
-    { key: "fullname words", val: payload["fullname words"], inf: isFake ? (payload["fullname words"] === 0 ? 0.7 : 0.3) : (payload["fullname words"] >= 2 ? 0.6 : 0.3) },
-    { key: "nums/length fullname", val: payload["nums/length fullname"], inf: payload["nums/length fullname"] > 0.3 ? 0.75 : 0.15 },
-    { key: "name==username", val: payload["name==username"], inf: payload["name==username"] === 1 ? 0.45 : 0.1 },
-    { key: "external URL", val: payload["external URL"], inf: payload["external URL"] === 1 ? 0.15 : 0.35 },
-    { key: "private", val: payload["private"], inf: 0.2 },
-  ].map(f => ({ ...f, influence: Math.min(f.inf * score + 0.05, 1.0) }))
-    .sort((a, b) => b.influence - a.influence);
+  // Step 1: For each feature compute a "realSignal" (0 = screams fake, 1 = screams real)
+  //         and assign an inherent weight (how important is this feature generally).
+  const features = [
+    {
+      key: "profile pic",
+      weight: 1.0,
+      realSignal: payload["profile pic"] === 1 ? 0.95 : 0.05,
+    },
+    {
+      key: "#followers",
+      weight: 0.92,
+      realSignal: (() => {
+        const v = payload["#followers"] || 0;
+        if (v >= 5000) return 0.97;
+        if (v >= 1000) return 0.92;
+        if (v >= 500)  return 0.82;
+        if (v >= 100)  return 0.65;
+        if (v >= 50)   return 0.45;
+        if (v >= 20)   return 0.25;
+        return 0.08;
+      })(),
+    },
+    {
+      key: "#posts",
+      weight: 0.88,
+      realSignal: (() => {
+        const v = payload["#posts"] || 0;
+        if (v >= 100) return 0.95;
+        if (v >= 50)  return 0.88;
+        if (v >= 20)  return 0.78;
+        if (v >= 10)  return 0.65;
+        if (v >= 5)   return 0.45;
+        if (v >= 1)   return 0.25;
+        return 0.05;
+      })(),
+    },
+    {
+      key: "#follows",
+      weight: 0.72,
+      realSignal: (() => {
+        const v = payload["#follows"] || 0;
+        if (v > 7500)  return 0.05;
+        if (v > 5000)  return 0.15;
+        if (v > 2000)  return 0.30;
+        if (v > 1000)  return 0.55;
+        if (v >= 50 && v <= 1000) return 0.85;
+        if (v >= 10)   return 0.60;
+        return 0.35;
+      })(),
+    },
+    {
+      key: "nums/length username",
+      weight: 0.78,
+      realSignal: (() => {
+        const v = payload["nums/length username"] || 0;
+        if (v === 0)    return 0.92;
+        if (v <= 0.1)   return 0.78;
+        if (v <= 0.2)   return 0.55;
+        if (v <= 0.35)  return 0.35;
+        if (v <= 0.5)   return 0.18;
+        return 0.06;
+      })(),
+    },
+    {
+      key: "description length",
+      weight: 0.68,
+      realSignal: (() => {
+        const v = payload["description length"] || 0;
+        if (v >= 80)  return 0.92;
+        if (v >= 50)  return 0.85;
+        if (v >= 30)  return 0.72;
+        if (v >= 15)  return 0.55;
+        if (v >= 5)   return 0.35;
+        return 0.08;
+      })(),
+    },
+    {
+      key: "fullname words",
+      weight: 0.62,
+      realSignal: (() => {
+        const v = payload["fullname words"] || 0;
+        if (v >= 3) return 0.88;
+        if (v >= 2) return 0.82;
+        if (v === 1) return 0.50;
+        return 0.08;
+      })(),
+    },
+    {
+      key: "nums/length fullname",
+      weight: 0.58,
+      realSignal: (() => {
+        const v = payload["nums/length fullname"] || 0;
+        if (v === 0)   return 0.88;
+        if (v <= 0.1)  return 0.68;
+        if (v <= 0.25) return 0.40;
+        if (v <= 0.4)  return 0.22;
+        return 0.08;
+      })(),
+    },
+    {
+      key: "external URL",
+      weight: 0.52,
+      realSignal: payload["external URL"] === 1 ? 0.78 : 0.32,
+    },
+    {
+      key: "name==username",
+      weight: 0.42,
+      realSignal: payload["name==username"] === 1 ? 0.25 : 0.68,
+    },
+    {
+      key: "private",
+      weight: 0.30,
+      realSignal: 0.50, // Neutral — private vs public doesn't strongly indicate either
+    },
+  ];
 
-  container.innerHTML = heuristics.map(h => {
+  // Step 2: Convert realSignal → supportScore (how much this feature supports the prediction)
+  //         then multiply by the feature's inherent weight.
+  const scored = features.map(f => {
+    const supportScore = isFake ? (1 - f.realSignal) : f.realSignal;
+    const rawInfluence = supportScore * f.weight;
+    return { ...f, supportScore, rawInfluence };
+  });
+
+  // Step 3: Normalize so the strongest feature maps to ~confidence, others proportionally.
+  const maxRaw = Math.max(...scored.map(s => s.rawInfluence));
+  const scaled = scored.map(s => {
+    const normalized = maxRaw > 0 ? (s.rawInfluence / maxRaw) * confidence : 0;
+    return { ...s, influence: Math.min(Math.max(normalized, 0.02), 1.0) };
+  }).sort((a, b) => b.influence - a.influence);
+
+  // Step 4: Render bars
+  container.innerHTML = scaled.map(h => {
     const pct = Math.round(h.influence * 100);
     return `<div class="feature-bar-row">
       <span class="fb-name">${FEATURE_LABELS[h.key] || h.key}</span>
@@ -473,7 +589,7 @@ function renderFeatureImportance(payload, result) {
 
   requestAnimationFrame(() => {
     container.querySelectorAll(".fb-fill").forEach((el, i) => {
-      const pct = Math.round(heuristics[i]?.influence * 100 || 0);
+      const pct = Math.round(scaled[i]?.influence * 100 || 0);
       setTimeout(() => { el.style.width = pct + "%"; }, 80 + i * 65);
     });
   });
