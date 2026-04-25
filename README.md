@@ -319,7 +319,3 @@ GitHub: https://github.com/Aakarsh85
 If you like this project, give it a ⭐ on GitHub!
 
 ---
-
-<p align="center">
-  🚀 Built with passion for AI & Full Stack Development
-</p>
