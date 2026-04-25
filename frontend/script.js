@@ -439,12 +439,10 @@ const FEATURE_LABELS = {
   "#follows": "Following",
 };
 
-function renderFeatureImportance(payload, result) {
-  const container = document.getElementById("featureBars");
-  if (!container) return;
-
+// ── Compute feature influence (reusable for UI + CSV export) ──
+function computeFeatureInfluence(payload, result) {
   const isFake = result.prediction === 1;
-  const confidence = result.confidence.percentage / 100; // 0–1
+  const confidence = result.confidence.percentage / 100;
 
   // Step 1: For each feature compute a "realSignal" (0 = screams fake, 1 = screams real)
   //         and assign an inherent weight (how important is this feature generally).
@@ -461,10 +459,10 @@ function renderFeatureImportance(payload, result) {
         const v = payload["#followers"] || 0;
         if (v >= 5000) return 0.97;
         if (v >= 1000) return 0.92;
-        if (v >= 500)  return 0.82;
-        if (v >= 100)  return 0.65;
-        if (v >= 50)   return 0.45;
-        if (v >= 20)   return 0.25;
+        if (v >= 500) return 0.82;
+        if (v >= 100) return 0.65;
+        if (v >= 50) return 0.45;
+        if (v >= 20) return 0.25;
         return 0.08;
       })(),
     },
@@ -474,11 +472,11 @@ function renderFeatureImportance(payload, result) {
       realSignal: (() => {
         const v = payload["#posts"] || 0;
         if (v >= 100) return 0.95;
-        if (v >= 50)  return 0.88;
-        if (v >= 20)  return 0.78;
-        if (v >= 10)  return 0.65;
-        if (v >= 5)   return 0.45;
-        if (v >= 1)   return 0.25;
+        if (v >= 50) return 0.88;
+        if (v >= 20) return 0.78;
+        if (v >= 10) return 0.65;
+        if (v >= 5) return 0.45;
+        if (v >= 1) return 0.25;
         return 0.05;
       })(),
     },
@@ -487,12 +485,12 @@ function renderFeatureImportance(payload, result) {
       weight: 0.72,
       realSignal: (() => {
         const v = payload["#follows"] || 0;
-        if (v > 7500)  return 0.05;
-        if (v > 5000)  return 0.15;
-        if (v > 2000)  return 0.30;
-        if (v > 1000)  return 0.55;
+        if (v > 7500) return 0.05;
+        if (v > 5000) return 0.15;
+        if (v > 2000) return 0.30;
+        if (v > 1000) return 0.55;
         if (v >= 50 && v <= 1000) return 0.85;
-        if (v >= 10)   return 0.60;
+        if (v >= 10) return 0.60;
         return 0.35;
       })(),
     },
@@ -501,11 +499,11 @@ function renderFeatureImportance(payload, result) {
       weight: 0.78,
       realSignal: (() => {
         const v = payload["nums/length username"] || 0;
-        if (v === 0)    return 0.92;
-        if (v <= 0.1)   return 0.78;
-        if (v <= 0.2)   return 0.55;
-        if (v <= 0.35)  return 0.35;
-        if (v <= 0.5)   return 0.18;
+        if (v === 0) return 0.92;
+        if (v <= 0.1) return 0.78;
+        if (v <= 0.2) return 0.55;
+        if (v <= 0.35) return 0.35;
+        if (v <= 0.5) return 0.18;
         return 0.06;
       })(),
     },
@@ -514,11 +512,11 @@ function renderFeatureImportance(payload, result) {
       weight: 0.68,
       realSignal: (() => {
         const v = payload["description length"] || 0;
-        if (v >= 80)  return 0.92;
-        if (v >= 50)  return 0.85;
-        if (v >= 30)  return 0.72;
-        if (v >= 15)  return 0.55;
-        if (v >= 5)   return 0.35;
+        if (v >= 80) return 0.92;
+        if (v >= 50) return 0.85;
+        if (v >= 30) return 0.72;
+        if (v >= 15) return 0.55;
+        if (v >= 5) return 0.35;
         return 0.08;
       })(),
     },
@@ -538,10 +536,10 @@ function renderFeatureImportance(payload, result) {
       weight: 0.58,
       realSignal: (() => {
         const v = payload["nums/length fullname"] || 0;
-        if (v === 0)   return 0.88;
-        if (v <= 0.1)  return 0.68;
+        if (v === 0) return 0.88;
+        if (v <= 0.1) return 0.68;
         if (v <= 0.25) return 0.40;
-        if (v <= 0.4)  return 0.22;
+        if (v <= 0.4) return 0.22;
         return 0.08;
       })(),
     },
@@ -572,12 +570,18 @@ function renderFeatureImportance(payload, result) {
 
   // Step 3: Normalize so the strongest feature maps to ~confidence, others proportionally.
   const maxRaw = Math.max(...scored.map(s => s.rawInfluence));
-  const scaled = scored.map(s => {
+  return scored.map(s => {
     const normalized = maxRaw > 0 ? (s.rawInfluence / maxRaw) * confidence : 0;
     return { ...s, influence: Math.min(Math.max(normalized, 0.02), 1.0) };
   }).sort((a, b) => b.influence - a.influence);
+}
 
-  // Step 4: Render bars
+function renderFeatureImportance(payload, result) {
+  const container = document.getElementById("featureBars");
+  if (!container) return;
+
+  const scaled = computeFeatureInfluence(payload, result);
+
   container.innerHTML = scaled.map(h => {
     const pct = Math.round(h.influence * 100);
     return `<div class="feature-bar-row">
@@ -984,18 +988,75 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
   });
 });
 
-// ── Export CSV ─────────────────────────────────────────────
+// ── Export CSV — includes original columns + predictions + feature influence ──
+function csvEscape(val) {
+  if (val == null) return "";
+  const str = String(val);
+  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+
 function exportResults() {
   if (!bulkData.length) return;
-  const headers = ["#", "Label", "Confidence%", "Real%", "Fake%", "Level"];
-  const rows = bulkData.map((r, i) => [
-    i + 1, r.label,
-    r.confidence.percentage.toFixed(2),
-    r.probabilities.real != null ? (r.probabilities.real * 100).toFixed(2) : "",
-    r.probabilities.fake != null ? (r.probabilities.fake * 100).toFixed(2) : "",
-    r.confidence.level
-  ]);
-  const csv = [headers, ...rows].map(r => r.join(",")).join("\n");
+
+  // Feature influence column labels (sorted order matches computeFeatureInfluence output)
+  const influenceKeys = [
+    "Profile Picture Influence%", "Followers Influence%", "Posts Influence%",
+    "Following Influence%", "Username Num Ratio Influence%", "Bio Length Influence%",
+    "Full Name Words Influence%", "Full Name Num Ratio Influence%",
+    "External URL Influence%", "Name=Username Influence%", "Private Account Influence%"
+  ];
+
+  // Collect all unique original-input column names (preserves upload order)
+  const rawColSet = new Set();
+  bulkData.forEach(r => {
+    if (r.raw_input) Object.keys(r.raw_input).forEach(k => rawColSet.add(k));
+  });
+  const rawCols = [...rawColSet];
+
+  // Build header: # | original columns | prediction columns | feature influence columns
+  const headers = [
+    "#", ...rawCols,
+    "Label", "Confidence%", "Real%", "Fake%", "Level",
+    ...influenceKeys
+  ];
+
+  const rows = bulkData.map((r, i) => {
+    // Original input values
+    const rawVals = rawCols.map(col => r.raw_input ? r.raw_input[col] : "");
+
+    // Prediction values
+    const predVals = [
+      r.label,
+      r.confidence.percentage.toFixed(2),
+      r.probabilities.real != null ? (r.probabilities.real * 100).toFixed(2) : "",
+      r.probabilities.fake != null ? (r.probabilities.fake * 100).toFixed(2) : "",
+      r.confidence.level
+    ];
+
+    // Feature influence values — compute from raw_input if available
+    let influenceVals = influenceKeys.map(() => "");
+    if (r.raw_input) {
+      const scored = computeFeatureInfluence(r.raw_input, r);
+      // scored is sorted by influence desc; map back to the fixed column order
+      const influenceMap = {};
+      scored.forEach(s => {
+        influenceMap[s.key] = Math.round(s.influence * 100);
+      });
+      const orderedKeys = [
+        "profile pic", "#followers", "#posts", "#follows",
+        "nums/length username", "description length", "fullname words",
+        "nums/length fullname", "external URL", "name==username", "private"
+      ];
+      influenceVals = orderedKeys.map(k => influenceMap[k] != null ? influenceMap[k] : "");
+    }
+
+    return [i + 1, ...rawVals, ...predVals, ...influenceVals];
+  });
+
+  const csv = [headers, ...rows].map(r => r.map(csvEscape).join(",")).join("\n");
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

@@ -233,8 +233,8 @@ def predict_file():
         real_count = total - fake_count
         avg_conf   = sum(r["confidence"]["score"] for r in results) / total
 
-        # Attach row number to each result for the frontend table
-        predictions = [{**r, "row": i + 1} for i, r in enumerate(results)]
+        # Attach row number + original input data to each result for the frontend table/export
+        predictions = [{**r, "row": i + 1, "raw_input": raw_list[i]} for i, r in enumerate(results)]
 
         return jsonify({
             "success": True,
