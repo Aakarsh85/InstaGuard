@@ -1648,7 +1648,7 @@ label {
   display: flex;
   flex-direction: column;
   gap: 9px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
 .feature-bar-row {
@@ -1656,6 +1656,16 @@ label {
   align-items: center;
   gap: 10px;
   font-size: 0.79rem;
+  transition: opacity 0.3s ease, max-height 0.35s ease;
+  max-height: 40px;
+  overflow: hidden;
+}
+
+.feature-bar-row.fb-hidden {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  gap: 0;
 }
 
 .fb-name {
@@ -1703,6 +1713,39 @@ label {
   font-size: 0.74rem;
   font-weight: 600;
   font-family: 'Inter', sans-serif;
+}
+
+.fb-see-more-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  padding: 6px 0;
+  margin-bottom: 14px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color var(--t), border-color var(--t), background var(--t);
+}
+
+.fb-see-more-btn:hover {
+  color: var(--indigo2);
+  border-color: var(--indigo);
+  background: var(--indigo-dim);
+}
+
+.fb-see-more-btn svg {
+  transition: transform 0.25s ease;
+}
+
+.fb-see-more-btn.expanded svg {
+  transform: rotate(180deg);
 }
 
 /* ============================================================
@@ -2123,6 +2166,17 @@ label {
   box-shadow: var(--shadow-sm);
 }
 
+.bulk-summary-top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface);
+  padding-bottom: 18px;
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
 .bulk-summary-strip {
   display: flex;
   align-items: center;
@@ -2130,7 +2184,97 @@ label {
   border: 1px solid var(--border);
   border-radius: var(--r);
   overflow: hidden;
-  margin-bottom: 18px;
+  flex: 1;
+}
+
+/* ── Doughnut Chart ── */
+.bulk-doughnut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 18px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  flex-shrink: 0;
+}
+
+.bulk-doughnut {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  position: relative;
+  background: conic-gradient(var(--real) 0% 50%, var(--fake) 50% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.6s ease;
+}
+
+.doughnut-center {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--surface2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.doughnut-pct {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.doughnut-sub {
+  font-size: 0.58rem;
+  color: var(--muted2);
+  margin-top: 1px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.doughnut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dl-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.dl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dl-dot.real { background: var(--real); }
+.dl-dot.fake { background: var(--fake); }
+
+.dl-label {
+  min-width: 30px;
+}
+
+.dl-val {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-left: auto;
 }
 
 .bss-item {

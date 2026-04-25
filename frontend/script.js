@@ -580,19 +580,57 @@ function renderFeatureImportance(payload, result) {
   const container = document.getElementById("featureBars");
   if (!container) return;
 
-  const scaled = computeFeatureInfluence(payload, result);
+  // Remove previous see-more button if it exists
+  const oldBtn = document.getElementById("fbSeeMoreBtn");
+  if (oldBtn) oldBtn.remove();
 
-  container.innerHTML = scaled.map(h => {
+  const scaled = computeFeatureInfluence(payload, result);
+  const VISIBLE_COUNT = 5;
+
+  container.innerHTML = scaled.map((h, i) => {
     const pct = Math.round(h.influence * 100);
-    return `<div class="feature-bar-row">
+    const hiddenClass = i >= VISIBLE_COUNT ? ' fb-hidden' : '';
+    return `<div class="feature-bar-row${hiddenClass}" data-fb-index="${i}">
       <span class="fb-name">${FEATURE_LABELS[h.key] || h.key}</span>
       <div class="fb-track"><div class="fb-fill" style="width:0%"></div></div>
       <span class="fb-val">${pct}%</span>
     </div>`;
   }).join("");
 
+  // Add "See more" button if there are more than VISIBLE_COUNT features
+  if (scaled.length > VISIBLE_COUNT) {
+    const btn = document.createElement('button');
+    btn.className = 'fb-see-more-btn';
+    btn.id = 'fbSeeMoreBtn';
+    btn.innerHTML = `See all ${scaled.length} features <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>`;
+    btn.addEventListener('click', () => {
+      const isExpanded = btn.classList.toggle('expanded');
+      container.querySelectorAll('.feature-bar-row').forEach((row, i) => {
+        if (i >= VISIBLE_COUNT) {
+          if (isExpanded) {
+            row.classList.remove('fb-hidden');
+            // Animate the newly revealed bars
+            const fill = row.querySelector('.fb-fill');
+            if (fill) {
+              const pct = Math.round(scaled[i]?.influence * 100 || 0);
+              setTimeout(() => { fill.style.width = pct + '%'; }, 60 + (i - VISIBLE_COUNT) * 65);
+            }
+          } else {
+            row.classList.add('fb-hidden');
+          }
+        }
+      });
+      btn.innerHTML = isExpanded
+        ? `Show less <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>`
+        : `See all ${scaled.length} features <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>`;
+    });
+    container.parentNode.insertBefore(btn, container.nextSibling);
+  }
+
+  // Animate only the initially visible bars
   requestAnimationFrame(() => {
     container.querySelectorAll(".fb-fill").forEach((el, i) => {
+      if (i >= VISIBLE_COUNT) return; // hidden bars animate on reveal
       const pct = Math.round(scaled[i]?.influence * 100 || 0);
       setTimeout(() => { el.style.width = pct + "%"; }, 80 + i * 65);
     });
@@ -916,6 +954,17 @@ function renderBulkResults(summary, predictions) {
   const total = summary.total || 1;
   const realPct = ((summary.real / total) * 100).toFixed(1);
   const fakePct = ((summary.fake / total) * 100).toFixed(1);
+
+  // Doughnut chart
+  const doughnut = el("bulkDoughnut");
+  if (doughnut) {
+    const realDeg = (summary.real / total) * 360;
+    doughnut.style.background = `conic-gradient(var(--real) 0deg ${realDeg}deg, var(--fake) ${realDeg}deg 360deg)`;
+  }
+  if (el("doughnutPct")) el("doughnutPct").textContent = realPct + "%";
+  if (el("dlReal")) el("dlReal").textContent = summary.real ?? 0;
+  if (el("dlFake")) el("dlFake").textContent = summary.fake ?? 0;
+
   setTimeout(() => {
     const sr = document.getElementById("splitReal");
     const sf = document.getElementById("splitFake");

@@ -479,18 +479,32 @@
         </div>
 
         <div class="bulk-result-wrap hidden" id="bulkResults">
-          <div class="bulk-summary-strip">
-            <div class="bss-item total"><span class="bss-val" id="bssTotal">0</span><span class="bss-lbl">Total</span></div>
-            <div class="bss-divider"></div>
-            <div class="bss-item real"><span class="bss-val" id="bssReal">0</span><span class="bss-lbl">Real</span></div>
-            <div class="bss-divider"></div>
-            <div class="bss-item fake"><span class="bss-val" id="bssFake">0</span><span class="bss-lbl">Fake</span></div>
-            <div class="bss-divider"></div>
-            <div class="bss-item conf"><span class="bss-val" id="bssConf">—</span><span class="bss-lbl">Avg confidence</span></div>
-            <button class="export-btn" id="exportBtn" onclick="exportResults()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Export CSV
-            </button>
+          <div class="bulk-summary-top">
+            <div class="bulk-summary-strip">
+              <div class="bss-item total"><span class="bss-val" id="bssTotal">0</span><span class="bss-lbl">Total</span></div>
+              <div class="bss-divider"></div>
+              <div class="bss-item real"><span class="bss-val" id="bssReal">0</span><span class="bss-lbl">Real</span></div>
+              <div class="bss-divider"></div>
+              <div class="bss-item fake"><span class="bss-val" id="bssFake">0</span><span class="bss-lbl">Fake</span></div>
+              <div class="bss-divider"></div>
+              <div class="bss-item conf"><span class="bss-val" id="bssConf">—</span><span class="bss-lbl">Avg confidence</span></div>
+              <button class="export-btn" id="exportBtn" onclick="exportResults()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export CSV
+              </button>
+            </div>
+            <div class="bulk-doughnut-wrap">
+              <div class="bulk-doughnut" id="bulkDoughnut">
+                <div class="doughnut-center">
+                  <span class="doughnut-pct" id="doughnutPct">0%</span>
+                  <span class="doughnut-sub">Real</span>
+                </div>
+              </div>
+              <div class="doughnut-legend">
+                <div class="dl-item"><span class="dl-dot real"></span><span class="dl-label">Real</span><strong class="dl-val" id="dlReal">0</strong></div>
+                <div class="dl-item"><span class="dl-dot fake"></span><span class="dl-label">Fake</span><strong class="dl-val" id="dlFake">0</strong></div>
+              </div>
+            </div>
           </div>
           <div class="split-bar-wrap">
             <div class="split-bar"><div class="split-real" id="splitReal"></div><div class="split-fake" id="splitFake"></div></div>
