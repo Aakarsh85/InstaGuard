@@ -444,135 +444,145 @@ function computeFeatureInfluence(payload, result) {
   const isFake = result.prediction === 1;
   const confidence = result.confidence.percentage / 100;
 
-  // Step 1: For each feature compute a "realSignal" (0 = screams fake, 1 = screams real)
-  //         and assign an inherent weight (how important is this feature generally).
+  // Each feature gets a directionScore from -1 to +1.
+  // -1 = strongly indicates Fake, +1 = strongly indicates Real.
+  // This replaces the old realSignal [0,1] so features can now
+  // genuinely oppose the prediction instead of always supporting it.
   const features = [
     {
       key: "profile pic",
       weight: 1.0,
-      realSignal: payload["profile pic"] === 1 ? 0.95 : 0.05,
+      directionScore: payload["profile pic"] === 1 ? 0.95 : -0.90,
     },
     {
       key: "#followers",
       weight: 0.92,
-      realSignal: (() => {
+      directionScore: (() => {
         const v = payload["#followers"] || 0;
-        if (v >= 5000) return 0.97;
-        if (v >= 1000) return 0.92;
-        if (v >= 500) return 0.82;
-        if (v >= 100) return 0.65;
-        if (v >= 50) return 0.45;
-        if (v >= 20) return 0.25;
-        return 0.08;
+        if (v >= 5000) return  0.94;
+        if (v >= 1000) return  0.84;
+        if (v >= 500)  return  0.64;
+        if (v >= 100)  return  0.30;
+        if (v >= 50)   return -0.10;
+        if (v >= 20)   return -0.50;
+        return -0.84;
       })(),
     },
     {
       key: "#posts",
       weight: 0.88,
-      realSignal: (() => {
+      directionScore: (() => {
         const v = payload["#posts"] || 0;
-        if (v >= 100) return 0.95;
-        if (v >= 50) return 0.88;
-        if (v >= 20) return 0.78;
-        if (v >= 10) return 0.65;
-        if (v >= 5) return 0.45;
-        if (v >= 1) return 0.25;
-        return 0.05;
+        if (v >= 100) return  0.90;
+        if (v >= 50)  return  0.76;
+        if (v >= 20)  return  0.56;
+        if (v >= 10)  return  0.30;
+        if (v >= 5)   return -0.10;
+        if (v >= 1)   return -0.50;
+        return -0.90;
       })(),
     },
     {
       key: "#follows",
       weight: 0.72,
-      realSignal: (() => {
+      directionScore: (() => {
         const v = payload["#follows"] || 0;
-        if (v > 7500) return 0.05;
-        if (v > 5000) return 0.15;
-        if (v > 2000) return 0.30;
-        if (v > 1000) return 0.55;
-        if (v >= 50 && v <= 1000) return 0.85;
-        if (v >= 10) return 0.60;
-        return 0.35;
+        if (v > 7500)             return -0.90;
+        if (v > 5000)             return -0.70;
+        if (v > 2000)             return -0.40;
+        if (v > 1000)             return  0.10;
+        if (v >= 50 && v <= 1000) return  0.70;
+        if (v >= 10)              return  0.20;
+        return -0.30;
       })(),
     },
     {
       key: "nums/length username",
       weight: 0.78,
-      realSignal: (() => {
+      directionScore: (() => {
         const v = payload["nums/length username"] || 0;
-        if (v === 0) return 0.92;
-        if (v <= 0.1) return 0.78;
-        if (v <= 0.2) return 0.55;
-        if (v <= 0.35) return 0.35;
-        if (v <= 0.5) return 0.18;
-        return 0.06;
+        if (v === 0)  return  0.84;
+        if (v <= 0.1) return  0.56;
+        if (v <= 0.2) return  0.10;
+        if (v <= 0.35)return -0.30;
+        if (v <= 0.5) return -0.64;
+        return -0.88;
       })(),
     },
     {
       key: "description length",
       weight: 0.68,
-      realSignal: (() => {
+      directionScore: (() => {
         const v = payload["description length"] || 0;
-        if (v >= 80) return 0.92;
-        if (v >= 50) return 0.85;
-        if (v >= 30) return 0.72;
-        if (v >= 15) return 0.55;
-        if (v >= 5) return 0.35;
-        return 0.08;
+        if (v >= 80) return  0.84;
+        if (v >= 50) return  0.70;
+        if (v >= 30) return  0.44;
+        if (v >= 15) return  0.10;
+        if (v >= 5)  return -0.30;
+        return -0.84;
       })(),
     },
     {
       key: "fullname words",
       weight: 0.62,
-      realSignal: (() => {
+      directionScore: (() => {
         const v = payload["fullname words"] || 0;
-        if (v >= 3) return 0.88;
-        if (v >= 2) return 0.82;
-        if (v === 1) return 0.50;
-        return 0.08;
+        if (v >= 3) return  0.76;
+        if (v >= 2) return  0.64;
+        if (v === 1)return  0.00;
+        return -0.84;
       })(),
     },
     {
       key: "nums/length fullname",
       weight: 0.58,
-      realSignal: (() => {
+      directionScore: (() => {
         const v = payload["nums/length fullname"] || 0;
-        if (v === 0) return 0.88;
-        if (v <= 0.1) return 0.68;
-        if (v <= 0.25) return 0.40;
-        if (v <= 0.4) return 0.22;
-        return 0.08;
+        if (v === 0)   return  0.76;
+        if (v <= 0.1)  return  0.36;
+        if (v <= 0.25) return -0.20;
+        if (v <= 0.4)  return -0.56;
+        return -0.84;
       })(),
     },
     {
       key: "external URL",
       weight: 0.52,
-      realSignal: payload["external URL"] === 1 ? 0.78 : 0.32,
+      directionScore: payload["external URL"] === 1 ? 0.56 : -0.36,
     },
     {
       key: "name==username",
       weight: 0.42,
-      realSignal: payload["name==username"] === 1 ? 0.25 : 0.68,
+      directionScore: payload["name==username"] === 1 ? -0.50 : 0.36,
     },
     {
       key: "private",
       weight: 0.30,
-      realSignal: 0.50, // Neutral — private vs public doesn't strongly indicate either
+      directionScore: 0.00, // Genuinely neutral — private accounts exist on both sides
     },
   ];
 
-  // Step 2: Convert realSignal → supportScore (how much this feature supports the prediction)
-  //         then multiply by the feature's inherent weight.
+  // Step 2: Tag each feature as supporting or opposing the prediction,
+  // then compute its raw magnitude (always positive).
   const scored = features.map(f => {
-    const supportScore = isFake ? (1 - f.realSignal) : f.realSignal;
-    const rawInfluence = supportScore * f.weight;
-    return { ...f, supportScore, rawInfluence };
+    const supporting = isFake ? f.directionScore < 0 : f.directionScore > 0;
+    const magnitude = Math.abs(f.directionScore) * f.weight;
+    return { ...f, supporting, magnitude };
   });
 
-  // Step 3: Normalize so the strongest feature maps to ~confidence, others proportionally.
-  const maxRaw = Math.max(...scored.map(s => s.rawInfluence));
-  return scored.map(s => {
-    const normalized = maxRaw > 0 ? (s.rawInfluence / maxRaw) * confidence : 0;
-    return { ...s, influence: Math.min(Math.max(normalized, 0.02), 1.0) };
+  // Step 3: Normalize the two groups separately so that:
+  //   - The strongest SUPPORTING feature scales up to `confidence`
+  //   - The strongest OPPOSING feature scales up to `(1 - confidence) * 0.75`
+  //     (capped so opposing bars never visually overpower a high-confidence verdict)
+  const maxSupport = Math.max(...scored.filter(f =>  f.supporting).map(f => f.magnitude), 0.001);
+  const maxOppose  = Math.max(...scored.filter(f => !f.supporting).map(f => f.magnitude), 0.001);
+  const opposeScale = (1 - confidence) * 0.75;
+
+  return scored.map(f => {
+    const raw = f.supporting
+      ? (f.magnitude / maxSupport) * confidence
+      : (f.magnitude / maxOppose)  * opposeScale;
+    return { ...f, influence: Math.min(Math.max(raw, 0.02), 1.0) };
   }).sort((a, b) => b.influence - a.influence);
 }
 
@@ -592,7 +602,7 @@ function renderFeatureImportance(payload, result) {
     const hiddenClass = i >= VISIBLE_COUNT ? ' fb-hidden' : '';
     return `<div class="feature-bar-row${hiddenClass}" data-fb-index="${i}">
       <span class="fb-name">${FEATURE_LABELS[h.key] || h.key}</span>
-      <div class="fb-track"><div class="fb-fill" style="width:0%"></div></div>
+      <div class="fb-track"><div class="fb-fill ${h.supporting ? '' : 'opposing'}" style="width:0%"></div></div>
       <span class="fb-val">${pct}%</span>
     </div>`;
   }).join("");
@@ -761,18 +771,19 @@ function generateExplanation(payload, result) {
   } else if (fnWords >= 2) {
     flags.push({ text: `${fnWords}-word display name`, type: "normal" });
   }
-
+  
+  //isme changes karne h
   // Follower / following ratio
   if (following > 0 && followers > 0) {
     const ratio2 = following / followers;
     if (ratio2 > 5 && followers >= 150) {
-      flags.push({ text: `Follows ${ratio2.toFixed(1)}× more than followers`, type: "suspicious" });
+      flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "suspicious" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
     } else if (ratio2 > 2 && followers >= 100) {
-      flags.push({ text: `Follows ${ratio2.toFixed(1)}× more than followers`, type: "warning" });
+      flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "warning" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
     } else {
-      flags.push({ text: `Follows ${ratio2.toFixed(1)}× more than followers`, type: "normal" });
+      flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "normal" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
     }
   }

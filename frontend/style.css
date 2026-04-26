@@ -1701,6 +1701,10 @@ label {
   overflow: hidden;
 }
 
+.fb-fill.opposing {
+  background: var(--warn);
+}
+
 /* No bar shine animation */
 .fb-fill::after {
   display: none;
