@@ -774,19 +774,64 @@ function generateExplanation(payload, result) {
   
   //isme changes karne h
   // Follower / following ratio
-  if (following > 0 && followers > 0) {
+  if (following > 0 && followers >0){
     const ratio2 = following / followers;
-    if (ratio2 > 5 && followers >= 150) {
+    if(followers >= following || ratio2 < 2){
+      flags.push({ text: `Normal Followers/Follwing ratio`, type: "normal" });
+      reasons.push(`Normal Followers/Follwing ratio`);
+    } else if(ratio2 >= 4 && following >=500) {
       flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "suspicious" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
-    } else if (ratio2 > 2 && followers >= 100) {
+    } else if (ratio2 > 5 && following <= 100) {
       flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "warning" });
+      reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
+    } else if ( ratio2 >= 5 && following <500){
+      flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "suspicious" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
     } else {
       flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "normal" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
     }
   }
+  // isse bhi accha?
+  // if (following > 0 && followers > 0) {
+  //   const ratio2 = following / followers;
+  //   const ratioText = ratio2.toFixed(1);
+
+  //   if (ratio2 < 2) {
+  //     flags.push({ text: `Normal Followers/Following ratio`, type: "normal" });
+  //     reasons.push(`Normal Followers/Following ratio`);
+
+  //   } else if (ratio2 >= 5 && following >= 500) {
+  //     // High ratio + large scale → suspicious
+  //     flags.push({ text: `Following ${ratioText}× more than followers`, type: "suspicious" });
+  //     reasons.push(`follows ${ratioText}× more than follows back`);
+
+  //   } else if (ratio2 >= 5) {
+  //     // High ratio but small/medium account → warning
+  //     flags.push({ text: `Following ${ratioText}× more than followers`, type: "warning" });
+  //     reasons.push(`follows ${ratioText}× more than follows back`);
+
+  //   } else {
+  //     // Moderate imbalance
+  //     flags.push({ text: `Following ${ratioText}× more than followers`, type: "warning" });
+  //     reasons.push(`follows ${ratioText}× more than follows back`);
+  //   }
+  // }
+
+  // if (following > 0 && followers > 0) {
+  //   const ratio2 = following / followers;
+  //   if (ratio2 >= 5 && following >= 500) {
+  //     flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "suspicious" });
+  //     reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
+  //   } else if (ratio2 > 5 && following <= 100) {
+  //     flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "warning" });
+  //     reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
+  //   } else {
+  //     flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "normal" });
+  //     reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
+  //   }
+  // }
 
   // Build paragraph
   let text = "";
