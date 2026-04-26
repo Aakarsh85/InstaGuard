@@ -1,0 +1,25 @@
+# ----------------------
+# Python environment
+# ----------------------
+.venv/
+__pycache__/
+*.pyc
+
+# ----------------------
+# Graphify (ignore everything by default)
+# ----------------------
+graphify-out/*
+
+# ----------------------
+# BUT keep useful outputs
+# ----------------------
+# Meri murzi m ni dalra inhe 
+# !graphify-out/GRAPH_REPORT.md
+# !graphify-out/graph.html
+# !graphify-out/graph.json
+
+# ----------------------
+# OS junk
+# ----------------------
+.DS_Store
+Thumbs.db
