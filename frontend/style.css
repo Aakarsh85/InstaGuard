@@ -1648,7 +1648,7 @@ label {
   display: flex;
   flex-direction: column;
   gap: 9px;
-  margin-bottom: 8px;
+  margin-bottom: 0px;
 }
 
 .feature-bar-row {
@@ -1662,10 +1662,11 @@ label {
 }
 
 .feature-bar-row.fb-hidden {
-  max-height: 0;
+  display: none !important;
+  /* max-height: 0;
   opacity: 0;
   margin: 0;
-  gap: 0;
+  gap: 0; */
 }
 
 .fb-name {
@@ -1878,7 +1879,8 @@ label {
   gap: 5px;
   width: 100%;
   padding: 6px 0;
-  margin-bottom: 14px;
+  margin-bottom: 0;
+  margin-top: 6px;
   background: transparent;
   border: 1px solid var(--border2);
   border-radius: var(--r-sm);
