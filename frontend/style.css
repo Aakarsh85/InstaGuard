@@ -2757,15 +2757,17 @@ label {
 }
 
 @keyframes dotPulse {
-
   0%,
   100% {
     opacity: 1;
   }
-
   50% {
     opacity: 0.5;
   }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .status-dot.online {

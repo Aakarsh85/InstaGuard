@@ -96,10 +96,11 @@
             </button>
           </div>
           <div class="history-list" id="historyList">
-            <div class="history-empty">
+            <div class="history-empty" id="historyEmptyState">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
               <span>No predictions yet</span>
             </div>
+            <div id="historyItemsContainer"></div>
           </div>
         </div>
 
@@ -172,7 +173,7 @@
         </div>
 
         <!-- Username fetch bar -->
-        <div class="username-fetch-bar" id="usernameFetchBar">
+        <!-- <div class="username-fetch-bar" id="usernameFetchBar">
           <div class="ufb-label">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             AI feature estimator
@@ -186,7 +187,7 @@
             Estimate features
           </button>
           <div class="ufb-hint">AI will estimate realistic feature values from the username pattern</div>
-        </div>
+        </div> -->
 
         <!-- ===== INPUT FORM ===== -->
         <div class="input-card">
@@ -304,7 +305,7 @@
               </div>
               <div class="field-input-wrap" id="wrap_username_text">
                 <span class="field-prefix">@</span>
-                <input type="text" id="username_text" placeholder="e.g. john.smith99" maxlength="50" autocomplete="off" />
+                <input type="text" id="username_text" placeholder="e.g. andrew.tate99" maxlength="50" autocomplete="off" />
               </div>
               <div class="field-live-hint" id="hint_username"></div>
             </div>
@@ -316,7 +317,7 @@
                 <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">The full display name shown on the profile. Word count and numeric ratio are computed automatically. Name matching the username is also detected.</div></div>
               </div>
               <div class="field-input-wrap" id="wrap_fullname_text">
-                <input type="text" id="fullname_text" placeholder="e.g. John Smith" maxlength="100" autocomplete="off" />
+                <input type="text" id="fullname_text" placeholder="e.g. Andrew Tate Chaudhary" maxlength="100" autocomplete="off" />
                 <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>
               </div>
               <div class="field-live-hint" id="hint_fullname"></div>
@@ -356,7 +357,12 @@
           <div class="result-card hidden" id="manualResultCard">
             <div class="result-header">
               <div class="result-icon-wrap" id="resultIconWrap">
-                <svg class="result-icon" id="resultIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"></svg>
+                <svg class="result-icon hidden" id="resultIconFake" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <svg class="result-icon hidden" id="resultIconReal" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
               </div>
               <div class="result-title-block">
                 <p class="result-eyebrow">Prediction result</p>
@@ -383,6 +389,10 @@
             <div class="feature-importance-section">
               <div class="section-label">Feature influence</div>
               <div class="feature-bars" id="featureBars"></div>
+              <button class="fb-see-more-btn hidden" id="fbSeeMoreBtn">
+                <span id="fbSeeMoreText">See Top 10 features</span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
             </div>
 
             <!-- Plain-English Explanation -->
@@ -509,6 +519,47 @@
 
     </main>
   </div>
+
+  <!-- HTML Templates for dynamic rendering -->
+  <template id="tpl-feature-bar-row">
+    <div class="feature-bar-row">
+      <span class="fb-name"></span>
+      <div class="fb-track"><div class="fb-fill"></div></div>
+      <span class="fb-val"></span>
+    </div>
+  </template>
+
+  <template id="tpl-exp-flag">
+    <span class="exp-flag"></span>
+  </template>
+
+  <template id="tpl-history-item">
+    <div class="history-item" title="Click to replay this prediction">
+      <span class="hi-dot"></span>
+      <span class="hi-label"></span>
+      <span class="hi-conf"></span>
+      <span class="hi-replay">↩</span>
+    </div>
+  </template>
+
+  <template id="tpl-prediction-row">
+    <tr>
+      <td class="pr-idx" style="color:var(--muted2)"></td>
+      <td><span class="verdict-pill"></span></td>
+      <td>
+        <span class="confidence-mini-bar">
+          <span class="confidence-mini-fill"></span>
+        </span><span class="pr-pct"></span>
+      </td>
+      <td class="pr-real"></td>
+      <td class="pr-fake"></td>
+      <td><span class="level-tag"></span></td>
+    </tr>
+  </template>
+
+  <template id="tpl-pagination-btn">
+    <button class="page-btn"></button>
+  </template>
 
   <script src="script.js"></script>
 </body>
