@@ -1701,8 +1701,160 @@ label {
   overflow: hidden;
 }
 
+/* Opposing feature bars use amber to visually distinguish them */
 .fb-fill.opposing {
   background: var(--warn);
+}
+
+/* ── Nav brand link ──────────────────────────────────────── */
+.nav-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ── CSV hint box (bulk upload) ─────────────────────────── */
+.csv-hint-box {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 11.5px;
+  color: var(--muted2);
+  line-height: 1.6;
+}
+
+.csv-hint-label {
+  color: var(--text2);
+}
+
+.csv-hint-note {
+  color: var(--muted2);
+  font-size: 11px;
+}
+
+/* ── Narrow skeleton line variant ───────────────────────── */
+.sk-sub--narrow {
+  width: 70%;
+}
+
+/* ── fb-fill opposing (amber for features that oppose the prediction) */
+.field-prefix {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted2);
+  font-size: 0.88rem;
+  font-weight: 500;
+  pointer-events: none;
+  user-select: none;
+}
+
+.field-input-wrap:has(.field-prefix) input {
+  padding-left: 24px;
+}
+
+/* ── Textarea wrapper ─────────────────────────────────────── */
+.field-input-wrap-textarea {
+  position: relative;
+}
+
+.field-input-wrap-textarea textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  color: var(--text);
+  border-radius: var(--r-sm);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  outline: none;
+  resize: none;
+  line-height: 1.5;
+  transition: border-color var(--t), background var(--t);
+}
+
+.field-input-wrap-textarea textarea::placeholder {
+  color: var(--muted2);
+  font-size: 0.84rem;
+}
+
+.field-input-wrap-textarea textarea:hover {
+  border-color: var(--border3);
+}
+
+.field-input-wrap-textarea textarea:focus {
+  border-color: var(--indigo);
+  background: var(--surfaceHover);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+/* ── Full-width field group (spans both columns) ─────────── */
+.field-group-wide {
+  grid-column: 1 / -1;
+}
+
+/* ── Live hint chips ─────────────────────────────────────── */
+.field-live-hint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-height: 20px;
+}
+
+.hint-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.70rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+  transition: opacity var(--t);
+}
+
+.hint-chip--safe {
+  background: rgba(5, 150, 105, 0.10);
+  color: var(--real);
+  border-color: rgba(5, 150, 105, 0.20);
+}
+
+.hint-chip--warn {
+  background: rgba(217, 119, 6, 0.10);
+  color: var(--warn);
+  border-color: rgba(217, 119, 6, 0.20);
+}
+
+.hint-chip--danger {
+  background: rgba(225, 29, 72, 0.10);
+  color: var(--fake);
+  border-color: rgba(225, 29, 72, 0.20);
+}
+
+.hint-chip--neutral {
+  background: var(--surface3);
+  color: var(--muted2);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .hint-chip--safe {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+[data-theme="dark"] .hint-chip--warn {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+[data-theme="dark"] .hint-chip--danger {
+  background: rgba(244, 63, 94, 0.12);
+  border-color: rgba(244, 63, 94, 0.25);
 }
 
 /* No bar shine animation */

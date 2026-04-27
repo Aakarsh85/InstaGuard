@@ -54,8 +54,9 @@ function initThemeToggle(btnId) {
 
 // 5. Auto-wire the toggle buttons used across all pages on DOM ready
 document.addEventListener('DOMContentLoaded', function () {
-  initThemeToggle('themeToggle');   // dashboard (index.html)
-  initThemeToggle('navThemeToggle'); // fallback ID if ever used
+  initThemeToggle('themeToggle');
+  initThemeToggle('navThemeToggle');
+  initFormListeners();
 
   // landing.html + methodology.html — scroll nav + animations
   var nav = document.getElementById('nav');
@@ -218,7 +219,52 @@ checkHealth();
 
 // ── Tab switching ─────────────────────────────────────────
 manualTab?.addEventListener("click", () => switchTab("manual"));
-bulkTab?.addEventListener("click", () => switchTab("bulk"));
+bulkTab?.addEventListener("click",   () => switchTab("bulk"));
+
+// ── initFormListeners ──────────────────────────────────────
+// Single place that wires ALL form interactions.
+// Called once on DOMContentLoaded. Keeps HTML structure-only.
+function initFormListeners() {
+  // ── Preset buttons ──────────────────────────────────
+  document.getElementById("presetBotBtn")?.addEventListener("click",  () => loadPreset("bot"));
+  document.getElementById("presetRealBtn")?.addEventListener("click", () => loadPreset("real"));
+  document.getElementById("presetEdgeBtn")?.addEventListener("click", () => loadPreset("edge"));
+
+  // ── AI estimator ────────────────────────────────────
+  document.getElementById("fetchUsernameBtn")?.addEventListener("click", fetchUsername);
+
+  // ── Toggles ─────────────────────────────────────────
+  ["profile_pic", "private", "external_url"].forEach(id => {
+    document.getElementById(id)?.addEventListener("change", function () {
+      updateToggleBadge(this);
+      updatePreview();
+      if (id === "profile_pic") computeLiveHints();
+    });
+  });
+
+  // ── Number inputs ────────────────────────────────────
+  ["followers", "following", "posts"].forEach(id => {
+    document.getElementById(id)?.addEventListener("input", function () {
+      validateField(this);
+      updatePreview();
+    });
+  });
+
+  // ── Text inputs ──────────────────────────────────────
+  document.getElementById("username_text")?.addEventListener("input", onUsernameInput);
+  document.getElementById("fullname_text")?.addEventListener("input", onFullnameInput);
+  document.getElementById("bio_text")?.addEventListener("input",      onBioInput);
+
+  // ── Action buttons ───────────────────────────────────
+  document.getElementById("predictManualBtn")?.addEventListener("click", predictManual);
+  document.getElementById("predictBulkBtn")?.addEventListener("click",   predictFile);
+  document.getElementById("exportBtn")?.addEventListener("click",         exportResults);
+
+  // ── Username AI estimator — also triggers on Enter ───
+  usernameInput?.addEventListener("keydown", e => {
+    if (e.key === "Enter") fetchUsername();
+  });
+}
 
 function switchTab(mode) {
   if (mode === "manual") {
@@ -233,26 +279,33 @@ function switchTab(mode) {
 // ── Reset form ─────────────────────────────────────────────
 document.getElementById("resetForm")?.addEventListener("click", () => {
   // Number inputs
-  ["followers", "following", "posts", "description_length",
-    "fullname_words", "nums_length_username", "nums_length_fullname"].forEach(id => {
+  ["followers", "following", "posts"].forEach(id => {
       const el = document.getElementById(id);
       if (el) { el.value = ""; clearFieldState(el); }
     });
 
   // Toggle inputs
-  ["profile_pic", "private", "external_url", "name_eq_username"].forEach(id => {
+  ["profile_pic", "private", "external_url"].forEach(id => {
     const cb = document.getElementById(id);
     if (cb) { cb.checked = false; updateToggleBadge(cb); }
+  });
+
+  // Text inputs
+  ["username_text", "fullname_text", "bio_text"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+
+  // Clear live hints
+  ["hint_username", "hint_fullname", "hint_bio"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = "";
   });
 
   if (usernameInput) usernameInput.value = "";
   resetPreview();
   hide(manualResultCard);
   hide(manualError);
-
-  // Hide hybrid breakdown
-  // const hb = document.getElementById("hybridBreakdown");
-  // if (hb) hb.style.display = "none";
 });
 
 // ── Validation ─────────────────────────────────────────────
@@ -308,13 +361,9 @@ function clearFieldState(input) {
 
 function validateAll() {
   let ok = true;
-  ["followers", "following", "posts", "description_length", "fullname_words"].forEach(id => {
+  ["followers", "following", "posts"].forEach(id => {
     const el = document.getElementById(id);
     if (el && el.value.trim() !== "" && !validateField(el)) ok = false;
-  });
-  ["nums_length_username", "nums_length_fullname"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el && el.value.trim() !== "" && !validateRatio(el)) ok = false;
   });
   return ok;
 }
@@ -324,9 +373,8 @@ function updatePreview() {
   const followers = safeNum(document.getElementById("followers")?.value);
   const following = safeNum(document.getElementById("following")?.value);
   const posts = safeNum(document.getElementById("posts")?.value);
-  const bioLen = safeNum(document.getElementById("description_length")?.value);
-  const username = usernameInput?.value.trim() || "";
-  const ratio = safeNum(document.getElementById("nums_length_username")?.value);
+  const username = (document.getElementById("username_text")?.value || "").trim();
+  const bio = (document.getElementById("bio_text")?.value || "").trim();
   const hasPic = document.getElementById("profile_pic")?.checked || false;
 
   document.getElementById("previewPosts").textContent = fmt(posts);
@@ -336,12 +384,10 @@ function updatePreview() {
 
   const bioEl = document.getElementById("previewBio");
   if (bioEl) {
-    if (bioLen === 0) bioEl.textContent = "No bio added.";
-    else if (bioLen < 20) bioEl.textContent = `Short bio (${bioLen} chars)`;
-    else bioEl.textContent = `Has a bio of ${bioLen} characters.`;
+    if (!bio) bioEl.textContent = "No bio added.";
+    else if (bio.length < 20) bioEl.textContent = `Short bio · ${bio.length} chars`;
+    else bioEl.textContent = bio.length > 65 ? bio.substring(0, 65) + "…" : bio;
   }
-
-
 }
 
 // Now also factors in profile picture presence
@@ -426,156 +472,236 @@ function drawGauge(percentage, isFake) {
 
 // ── Feature importance bars — updated for 11 new features ─
 const FEATURE_LABELS = {
-  "profile pic": "Profile Picture",
-  "nums/length username": "Username Num Ratio",
-  "fullname words": "Full Name Words",
-  "nums/length fullname": "Full Name Num Ratio",
-  "name==username": "Name = Username",
-  "description length": "Bio Length",
-  "external URL": "External URL",
-  "private": "Private Account",
-  "#posts": "Posts",
-  "#followers": "Followers",
-  "#follows": "Following",
+  // Original 11
+  "profile pic":            "Profile Picture",
+  "nums/length username":   "Username Num Ratio",
+  "fullname words":         "Full Name Words",
+  "nums/length fullname":   "Full Name Num Ratio",
+  "name==username":         "Name = Username",
+  "description length":     "Bio Length",
+  "external URL":           "External URL",
+  "private":                "Private Account",
+  "#posts":                 "Posts",
+  "#followers":             "Followers",
+  "#follows":               "Following",
+  // 7 Engineered features
+  "username_suspicion":     "Username Suspicion",
+  "activity_score":         "Activity Score",
+  "follower_follow_ratio":  "Follower/Follow Ratio",
+  "follow_aggressiveness":  "Follow Aggressiveness",
+  "profile_completeness":   "Profile Completeness",
+  "name_authenticity":      "Name Authenticity",
+  "posts_per_follower":     "Posts per Follower",
 };
 
-// ── Compute feature influence (reusable for UI + CSV export) ──
+// ── Compute feature influence — uses real gain-based weights + directional scoring ──
 function computeFeatureInfluence(payload, result) {
   const isFake = result.prediction === 1;
   const confidence = result.confidence.percentage / 100;
 
-  // Each feature gets a directionScore from -1 to +1.
-  // -1 = strongly indicates Fake, +1 = strongly indicates Real.
-  // This replaces the old realSignal [0,1] so features can now
-  // genuinely oppose the prediction instead of always supporting it.
+  // Read raw fields from payload
+  const followers    = payload["#followers"] || 0;
+  const following    = payload["#follows"]   || 0;
+  const posts        = payload["#posts"]     || 0;
+  const hasPic       = payload["profile pic"] === 1 ? 1 : 0;
+  const bioLen       = payload["description length"] || 0;
+  const numRatioUser = payload["nums/length username"] || 0;
+  const numRatioFull = payload["nums/length fullname"] || 0;
+  const fnWords      = payload["fullname words"] || 0;
+
+  // Read engineered features — compute inline if not in payload (bulk upload case)
+  const followerFollowRatio = payload["follower_follow_ratio"] !== undefined
+    ? payload["follower_follow_ratio"] : followers / (following + 1);
+  const postsPerFollower    = payload["posts_per_follower"] !== undefined
+    ? payload["posts_per_follower"]    : posts / (followers + 1);
+  const followAggressive    = payload["follow_aggressiveness"] !== undefined
+    ? payload["follow_aggressiveness"] : following / (followers + posts + 1);
+  const profileComplete     = payload["profile_completeness"] !== undefined
+    ? payload["profile_completeness"]
+    : hasPic + (bioLen > 0 ? 1 : 0) + (payload["external URL"] === 1 ? 1 : 0) + (fnWords > 0 ? 1 : 0);
+  const userSuspicion       = payload["username_suspicion"] !== undefined
+    ? payload["username_suspicion"]    : numRatioUser * (1 - hasPic);
+  const nameAuth            = payload["name_authenticity"] !== undefined
+    ? payload["name_authenticity"]
+    : fnWords * (1 - (payload["name==username"] === 1 ? 1 : 0));
+  const activityScore       = payload["activity_score"] !== undefined
+    ? payload["activity_score"]        : Math.log1p(posts) + Math.log1p(followers);
+
+  // Weights from gain-based feature importance (Cell 10 — new retrained model)
+  // directionScore: -1 = strong fake signal, +1 = strong real signal
   const features = [
     {
-      key: "profile pic",
-      weight: 1.0,
-      directionScore: payload["profile pic"] === 1 ? 0.95 : -0.90,
+      key: "profile pic", weight: 0.4614,
+      directionScore: hasPic ? 0.95 : -0.90,
     },
     {
-      key: "#followers",
-      weight: 0.92,
+      key: "username_suspicion", weight: 0.3104,
       directionScore: (() => {
-        const v = payload["#followers"] || 0;
-        if (v >= 5000) return  0.94;
-        if (v >= 1000) return  0.84;
-        if (v >= 500)  return  0.64;
-        if (v >= 100)  return  0.30;
-        if (v >= 50)   return -0.10;
-        if (v >= 20)   return -0.50;
-        return -0.84;
-      })(),
-    },
-    {
-      key: "#posts",
-      weight: 0.88,
-      directionScore: (() => {
-        const v = payload["#posts"] || 0;
-        if (v >= 100) return  0.90;
-        if (v >= 50)  return  0.76;
-        if (v >= 20)  return  0.56;
-        if (v >= 10)  return  0.30;
-        if (v >= 5)   return -0.10;
-        if (v >= 1)   return -0.50;
+        if (userSuspicion === 0)   return  0.90;
+        if (userSuspicion <= 0.05) return  0.60;
+        if (userSuspicion <= 0.15) return  0.10;
+        if (userSuspicion <= 0.30) return -0.40;
+        if (userSuspicion <= 0.50) return -0.70;
         return -0.90;
       })(),
     },
     {
-      key: "#follows",
-      weight: 0.72,
+      key: "activity_score", weight: 0.0414,
       directionScore: (() => {
-        const v = payload["#follows"] || 0;
-        if (v > 7500)             return -0.90;
-        if (v > 5000)             return -0.70;
-        if (v > 2000)             return -0.40;
-        if (v > 1000)             return  0.10;
-        if (v >= 50 && v <= 1000) return  0.70;
-        if (v >= 10)              return  0.20;
-        return -0.30;
+        if (activityScore >= 14) return  0.90;
+        if (activityScore >= 10) return  0.76;
+        if (activityScore >= 7)  return  0.50;
+        if (activityScore >= 4)  return  0.10;
+        if (activityScore >= 2)  return -0.40;
+        return -0.84;
       })(),
     },
     {
-      key: "nums/length username",
-      weight: 0.78,
+      key: "#posts", weight: 0.0289,
       directionScore: (() => {
-        const v = payload["nums/length username"] || 0;
-        if (v === 0)  return  0.84;
-        if (v <= 0.1) return  0.56;
-        if (v <= 0.2) return  0.10;
-        if (v <= 0.35)return -0.30;
-        if (v <= 0.5) return -0.64;
+        if (posts >= 100) return  0.90;
+        if (posts >= 50)  return  0.76;
+        if (posts >= 20)  return  0.56;
+        if (posts >= 10)  return  0.30;
+        if (posts >= 5)   return -0.10;
+        if (posts >= 1)   return -0.50;
+        return -0.90;
+      })(),
+    },
+    {
+      key: "nums/length fullname", weight: 0.0270,
+      directionScore: (() => {
+        if (numRatioFull === 0)   return  0.76;
+        if (numRatioFull <= 0.10) return  0.36;
+        if (numRatioFull <= 0.25) return -0.20;
+        if (numRatioFull <= 0.40) return -0.56;
+        return -0.84;
+      })(),
+    },
+    {
+      key: "nums/length username", weight: 0.0255,
+      directionScore: (() => {
+        if (numRatioUser === 0)   return  0.84;
+        if (numRatioUser <= 0.10) return  0.56;
+        if (numRatioUser <= 0.20) return  0.10;
+        if (numRatioUser <= 0.35) return -0.30;
+        if (numRatioUser <= 0.50) return -0.64;
         return -0.88;
       })(),
     },
     {
-      key: "description length",
-      weight: 0.68,
+      key: "profile_completeness", weight: 0.0228,
       directionScore: (() => {
-        const v = payload["description length"] || 0;
-        if (v >= 80) return  0.84;
-        if (v >= 50) return  0.70;
-        if (v >= 30) return  0.44;
-        if (v >= 15) return  0.10;
-        if (v >= 5)  return -0.30;
+        if (profileComplete >= 4) return  0.90;
+        if (profileComplete >= 3) return  0.64;
+        if (profileComplete >= 2) return  0.20;
+        if (profileComplete >= 1) return -0.30;
         return -0.84;
       })(),
     },
     {
-      key: "fullname words",
-      weight: 0.62,
+      key: "follow_aggressiveness", weight: 0.0221,
       directionScore: (() => {
-        const v = payload["fullname words"] || 0;
-        if (v >= 3) return  0.76;
-        if (v >= 2) return  0.64;
-        if (v === 1)return  0.00;
+        if (followAggressive > 50)  return -0.90;
+        if (followAggressive > 20)  return -0.70;
+        if (followAggressive > 10)  return -0.50;
+        if (followAggressive > 5)   return -0.20;
+        if (followAggressive > 2)   return  0.10;
+        if (followAggressive > 1)   return  0.40;
+        return  0.70;
+      })(),
+    },
+    {
+      key: "#followers", weight: 0.0159,
+      directionScore: (() => {
+        if (followers >= 5000) return  0.94;
+        if (followers >= 1000) return  0.84;
+        if (followers >= 500)  return  0.64;
+        if (followers >= 100)  return  0.30;
+        if (followers >= 50)   return -0.10;
+        if (followers >= 20)   return -0.50;
         return -0.84;
       })(),
     },
     {
-      key: "nums/length fullname",
-      weight: 0.58,
+      key: "follower_follow_ratio", weight: 0.0137,
       directionScore: (() => {
-        const v = payload["nums/length fullname"] || 0;
-        if (v === 0)   return  0.76;
-        if (v <= 0.1)  return  0.36;
-        if (v <= 0.25) return -0.20;
-        if (v <= 0.4)  return -0.56;
+        if (followerFollowRatio >= 10)  return  0.90;
+        if (followerFollowRatio >= 3)   return  0.70;
+        if (followerFollowRatio >= 1)   return  0.40;
+        if (followerFollowRatio >= 0.5) return -0.10;
+        if (followerFollowRatio >= 0.2) return -0.50;
+        return -0.80;
+      })(),
+    },
+    {
+      key: "description length", weight: 0.0066,
+      directionScore: (() => {
+        if (bioLen >= 80) return  0.84;
+        if (bioLen >= 50) return  0.70;
+        if (bioLen >= 30) return  0.44;
+        if (bioLen >= 15) return  0.10;
+        if (bioLen >= 5)  return -0.30;
         return -0.84;
       })(),
     },
     {
-      key: "external URL",
-      weight: 0.52,
-      directionScore: payload["external URL"] === 1 ? 0.56 : -0.36,
+      key: "private",          weight: 0.0062, directionScore: 0.00,
     },
     {
-      key: "name==username",
-      weight: 0.42,
-      directionScore: payload["name==username"] === 1 ? -0.50 : 0.36,
+      key: "fullname words", weight: 0.0055,
+      directionScore: (() => {
+        if (fnWords >= 3)  return  0.76;
+        if (fnWords >= 2)  return  0.64;
+        if (fnWords === 1) return  0.00;
+        return -0.84;
+      })(),
     },
     {
-      key: "private",
-      weight: 0.30,
-      directionScore: 0.00, // Genuinely neutral — private accounts exist on both sides
+      key: "#follows", weight: 0.0046,
+      directionScore: (() => {
+        if (following > 7500)                      return -0.90;
+        if (following > 5000)                      return -0.70;
+        if (following > 2000)                      return -0.40;
+        if (following > 1000)                      return  0.10;
+        if (following >= 50 && following <= 1000)  return  0.70;
+        if (following >= 10)                       return  0.20;
+        return -0.30;
+      })(),
     },
+    {
+      key: "name_authenticity", weight: 0.0045,
+      directionScore: (() => {
+        if (nameAuth >= 3) return  0.70;
+        if (nameAuth >= 2) return  0.50;
+        if (nameAuth >= 1) return  0.20;
+        return -0.40;
+      })(),
+    },
+    {
+      key: "posts_per_follower", weight: 0.0035,
+      directionScore: (() => {
+        if (postsPerFollower > 5)    return -0.60;
+        if (postsPerFollower > 1)    return  0.10;
+        if (postsPerFollower > 0.1)  return  0.70;
+        if (postsPerFollower > 0.01) return  0.40;
+        return -0.50;
+      })(),
+    },
+    { key: "name==username", weight: 0.000, directionScore: 0.00 },
+    { key: "external URL",   weight: 0.000, directionScore: 0.00 },
   ];
 
-  // Step 2: Tag each feature as supporting or opposing the prediction,
-  // then compute its raw magnitude (always positive).
+  // Tag each feature as supporting or opposing the prediction
   const scored = features.map(f => {
     const supporting = isFake ? f.directionScore < 0 : f.directionScore > 0;
-    const magnitude = Math.abs(f.directionScore) * f.weight;
+    const magnitude  = Math.abs(f.directionScore) * f.weight;
     return { ...f, supporting, magnitude };
   });
 
-  // Step 3: Normalize the two groups separately so that:
-  //   - The strongest SUPPORTING feature scales up to `confidence`
-  //   - The strongest OPPOSING feature scales up to `(1 - confidence) * 0.75`
-  //     (capped so opposing bars never visually overpower a high-confidence verdict)
-  const maxSupport = Math.max(...scored.filter(f =>  f.supporting).map(f => f.magnitude), 0.001);
-  const maxOppose  = Math.max(...scored.filter(f => !f.supporting).map(f => f.magnitude), 0.001);
+  // Normalize groups separately so opposing features don't overpower the verdict
+  const maxSupport  = Math.max(...scored.filter(f =>  f.supporting).map(f => f.magnitude), 0.001);
+  const maxOppose   = Math.max(...scored.filter(f => !f.supporting).map(f => f.magnitude), 0.001);
   const opposeScale = (1 - confidence) * 0.75;
 
   return scored.map(f => {
@@ -599,10 +725,11 @@ function renderFeatureImportance(payload, result) {
 
   container.innerHTML = scaled.map((h, i) => {
     const pct = Math.round(h.influence * 100);
-    const hiddenClass = i >= VISIBLE_COUNT ? ' fb-hidden' : '';
+    const hiddenClass  = i >= VISIBLE_COUNT ? ' fb-hidden' : '';
+    const fillClass    = h.supporting === false ? 'fb-fill opposing' : 'fb-fill';
     return `<div class="feature-bar-row${hiddenClass}" data-fb-index="${i}">
       <span class="fb-name">${FEATURE_LABELS[h.key] || h.key}</span>
-      <div class="fb-track"><div class="fb-fill ${h.supporting ? '' : 'opposing'}" style="width:0%"></div></div>
+      <div class="fb-track"><div class="${fillClass}" style="width:0%"></div></div>
       <span class="fb-val">${pct}%</span>
     </div>`;
   }).join("");
@@ -774,64 +901,19 @@ function generateExplanation(payload, result) {
   
   //isme changes karne h
   // Follower / following ratio
-  if (following > 0 && followers >0){
+  if (following > 0 && followers > 0) {
     const ratio2 = following / followers;
-    if(followers >= following || ratio2 < 2){
-      flags.push({ text: `Normal Followers/Follwing ratio`, type: "normal" });
-      reasons.push(`Normal Followers/Follwing ratio`);
-    } else if(ratio2 >= 4 && following >=500) {
+    if (ratio2 > 5 && followers >= 150) {
       flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "suspicious" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
-    } else if (ratio2 > 5 && following <= 100) {
+    } else if (ratio2 > 2 && followers >= 100) {
       flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "warning" });
-      reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
-    } else if ( ratio2 >= 5 && following <500){
-      flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "suspicious" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
     } else {
       flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "normal" });
       reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
     }
   }
-  // isse bhi accha?
-  // if (following > 0 && followers > 0) {
-  //   const ratio2 = following / followers;
-  //   const ratioText = ratio2.toFixed(1);
-
-  //   if (ratio2 < 2) {
-  //     flags.push({ text: `Normal Followers/Following ratio`, type: "normal" });
-  //     reasons.push(`Normal Followers/Following ratio`);
-
-  //   } else if (ratio2 >= 5 && following >= 500) {
-  //     // High ratio + large scale → suspicious
-  //     flags.push({ text: `Following ${ratioText}× more than followers`, type: "suspicious" });
-  //     reasons.push(`follows ${ratioText}× more than follows back`);
-
-  //   } else if (ratio2 >= 5) {
-  //     // High ratio but small/medium account → warning
-  //     flags.push({ text: `Following ${ratioText}× more than followers`, type: "warning" });
-  //     reasons.push(`follows ${ratioText}× more than follows back`);
-
-  //   } else {
-  //     // Moderate imbalance
-  //     flags.push({ text: `Following ${ratioText}× more than followers`, type: "warning" });
-  //     reasons.push(`follows ${ratioText}× more than follows back`);
-  //   }
-  // }
-
-  // if (following > 0 && followers > 0) {
-  //   const ratio2 = following / followers;
-  //   if (ratio2 >= 5 && following >= 500) {
-  //     flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "suspicious" });
-  //     reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
-  //   } else if (ratio2 > 5 && following <= 100) {
-  //     flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "warning" });
-  //     reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
-  //   } else {
-  //     flags.push({ text: `Following ${ratio2.toFixed(1)}× more than followers`, type: "normal" });
-  //     reasons.push(`follows ${ratio2.toFixed(1)}× more than follows back`);
-  //   }
-  // }
 
   // Build paragraph
   let text = "";
@@ -1205,7 +1287,7 @@ function renderHistory() {
     </div>`).join("");
 }
 
-// ── History replay — updated for new fields ────────────────
+// ── History replay ────────────────────────────────────────
 function replayHistory(idx) {
   const item = sessionHistory[idx];
   if (!item || !item.payload || !item.result) return;
@@ -1214,32 +1296,27 @@ function replayHistory(idx) {
 
   const p = item.payload;
 
-  // Re-populate number inputs
-  const numMap = {
-    "followers": "#followers",
-    "following": "#follows",
-    "posts": "#posts",
-    "description_length": "description length",
-    "fullname_words": "fullname words",
-    "nums_length_username": "nums/length username",
-    "nums_length_fullname": "nums/length fullname",
-  };
-  Object.entries(numMap).forEach(([elId, payloadKey]) => {
+  // Restore number inputs
+  const numMap = { followers: "#followers", following: "#follows", posts: "#posts" };
+  Object.entries(numMap).forEach(([elId, key]) => {
     const el = document.getElementById(elId);
-    if (el) el.value = p[payloadKey] ?? 0;
+    if (el) el.value = p[key] ?? 0;
   });
 
-  // Re-populate toggles
-  const toggleMap = {
-    profile_pic: "profile pic",
-    private: "private",
-    external_url: "external URL",
-    name_eq_username: "name==username",
-  };
-  Object.entries(toggleMap).forEach(([elId, payloadKey]) => {
+  // Restore toggles
+  const toggleMap = { profile_pic: "profile pic", private: "private", external_url: "external URL" };
+  Object.entries(toggleMap).forEach(([elId, key]) => {
     const cb = document.getElementById(elId);
-    if (cb) { cb.checked = p[payloadKey] === 1; updateToggleBadge(cb); }
+    if (cb) { cb.checked = p[key] === 1; updateToggleBadge(cb); }
   });
+
+  // Restore text fields (stored under _-prefixed keys)
+  const uEl = document.getElementById('username_text');
+  const fEl = document.getElementById('fullname_text');
+  const bEl = document.getElementById('bio_text');
+  if (uEl) { uEl.value = p._username_text || ''; onUsernameInput(); }
+  if (fEl) { fEl.value = p._fullname_text || ''; onFullnameInput(); }
+  if (bEl) { bEl.value = p._bio_text      || ''; onBioInput(); }
 
   updatePreview();
   hide(manualError);
@@ -1257,7 +1334,7 @@ clearHistoryBtn?.addEventListener("click", () => {
   renderHistory();
 });
 
-// ── AI Username Estimator — updated for new feature set ───
+// ── AI Username Estimator ─────────────────────────────────
 async function fetchUsername() {
   const username = usernameInput?.value.trim();
   if (!username) {
@@ -1285,56 +1362,57 @@ async function fetchUsername() {
         max_tokens: 400,
         messages: [{
           role: "user",
-          content: `You are assisting a fake Instagram account detection tool. Based ONLY on the username pattern, estimate realistic feature values. Return ONLY valid JSON — no explanation, no markdown, no backticks.
+          content: `You are helping a fake Instagram account detection tool estimate realistic profile values from a username pattern.
+Return ONLY valid JSON — no explanation, no markdown, no backticks.
 
 Username: "${username}"
 
-Return exactly this JSON:
+Return exactly this JSON structure:
 {
   "profile_pic": <0 or 1>,
-  "nums_length_username": <float: count digits in "${username}" divided by length of "${username}">,
-  "fullname_words": <integer 0-5>,
-  "nums_length_fullname": <float 0.0-1.0>,
-  "name_eq_username": <0 or 1>,
-  "description_length": <integer 0-150>,
   "external_url": <0 or 1>,
   "private": <0 or 1>,
-  "posts": <integer 0-5000>,
-  "followers": <integer 0-100000>,
-  "following": <integer 0-10000>
+  "followers": <integer>,
+  "following": <integer>,
+  "posts": <integer>,
+  "fullname_text": <string — realistic display name, empty string if bot>,
+  "bio_text": <string — realistic bio text, empty string if bot, max 100 chars>
 }
 
 Rules:
-- Compute nums_length_username precisely: count digit characters in the username, divide by total username length.
-- Bot-like username (many digits, random chars, very long number strings) → profile_pic:0, followers<30, following>2000, posts:0, description_length:0, fullname_words:0, name_eq_username:1.
-- Human-like username (real name, words, underscores, few digits) → profile_pic:1, followers 200-5000, following 100-600, posts 20-300, description_length 30-100, fullname_words:2.
-- Edge cases get intermediate values.`
+- Compute from the username "${username}" itself.
+- Bot-like username (many digits, random chars, long number strings like user738291): profile_pic:0, followers<30, following>2000, posts:0, fullname_text:"", bio_text:"".
+- Human-like username (real name pattern, words, underscores, few digits like john.smith): profile_pic:1, followers 200-5000, following 100-600, posts 20-300, fullname_text:"First Last", bio_text:"realistic short bio".
+- Edge cases get intermediate values.
+- fullname_text and bio_text must be plain strings.`
         }]
       })
     });
 
-    const data = await response.json();
-    const raw = data.content?.map(i => i.text || "").join("") || "";
-    const clean = raw.replace(/```json|```/g, "").trim();
+    const data   = await response.json();
+    const raw    = data.content?.map(i => i.text || "").join("") || "";
+    const clean  = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(clean);
 
     // Set toggles
-    const toggleMap2 = { profile_pic: "profile_pic", private: "private", external_url: "external_url", name_eq_username: "name_eq_username" };
-    Object.entries(toggleMap2).forEach(([key, elId]) => {
-      const cb = document.getElementById(elId);
-      if (cb) { cb.checked = parsed[key] === 1; updateToggleBadge(cb); }
+    ['profile_pic', 'external_url', 'private'].forEach(id => {
+      const cb = document.getElementById(id);
+      if (cb) { cb.checked = parsed[id] === 1; updateToggleBadge(cb); }
     });
 
     // Set number inputs
-    const numMap2 = {
-      followers: "followers", following: "following", posts: "posts",
-      description_length: "description_length", fullname_words: "fullname_words",
-      nums_length_username: "nums_length_username", nums_length_fullname: "nums_length_fullname"
-    };
-    Object.entries(numMap2).forEach(([key, elId]) => {
-      const el = document.getElementById(elId);
+    ['followers', 'following', 'posts'].forEach(key => {
+      const el = document.getElementById(key);
       if (el) el.value = parsed[key] ?? 0;
     });
+
+    // Set text inputs and trigger live hints
+    const uEl = document.getElementById('username_text');
+    const fEl = document.getElementById('fullname_text');
+    const bEl = document.getElementById('bio_text');
+    if (uEl) { uEl.value = username;                 onUsernameInput(); }
+    if (fEl) { fEl.value = parsed.fullname_text || ''; onFullnameInput(); }
+    if (bEl) { bEl.value = parsed.bio_text      || ''; onBioInput(); }
 
     updatePreview();
 
@@ -1344,19 +1422,17 @@ Rules:
       </svg> Done!`;
     setTimeout(() => {
       fetchUsernameBtn.innerHTML = origHTML;
-      fetchUsernameBtn.disabled = false;
+      fetchUsernameBtn.disabled  = false;
     }, 1600);
 
   } catch (err) {
     fetchUsernameBtn.innerHTML = origHTML;
-    fetchUsernameBtn.disabled = false;
+    fetchUsernameBtn.disabled  = false;
     showManualError("Could not estimate features. Please fill the form manually.");
   }
 }
 
-usernameInput?.addEventListener("keydown", e => {
-  if (e.key === "Enter") fetchUsername();
-});
+
 
 // ── File upload UI ─────────────────────────────────────────
 uploadZone?.addEventListener("dragover", e => { e.preventDefault(); uploadZone.classList.add("drag-over"); });
@@ -1411,21 +1487,19 @@ function fmt(n) {
 // checkbox in index.html. Updates the ON/OFF badge pill and the
 // short status label text inside each toggle row.
 function updateToggleBadge(checkbox) {
-  const id = checkbox.id;
+  const id    = checkbox.id;
   const badge = document.getElementById(id + '_badge');
   const label = document.getElementById(id + '_label');
 
-  // OFF label → ON label for each toggle
   const labels = {
-    profile_pic: ['No profile picture', 'Has profile picture'],
-    private: ['Public account', 'Private account'],
-    external_url: ['No external URL', 'Has external URL'],
-    name_eq_username: ['Name ≠ Username', 'Name = Username'],
+    profile_pic:  ['No profile picture', 'Has profile picture'],
+    private:      ['Public account',     'Private account'],
+    external_url: ['No external URL',    'Has external URL'],
   };
 
   if (badge) {
     badge.textContent = checkbox.checked ? 'ON' : 'OFF';
-    badge.classList.toggle('on', checkbox.checked);   // applies purple tint when ON
+    badge.classList.toggle('on', checkbox.checked);
   }
   if (label && labels[id]) {
     label.textContent = checkbox.checked ? labels[id][1] : labels[id][0];
@@ -1433,28 +1507,73 @@ function updateToggleBadge(checkbox) {
 }
 
 
+// ── NUMERIC RATIO HELPER ─────────────────────────────────────
+// Count digits / total length. Used for username + fullname ratio computation.
+function computeNumericRatio(str) {
+  if (!str || str.length === 0) return 0;
+  const digits = (str.match(/[0-9]/g) || []).length;
+  return parseFloat((digits / str.length).toFixed(4));
+}
+
 // ── BUILD PAYLOAD ────────────────────────────────────────────
-// Reads every form field and returns an object whose keys exactly
-// match the column names the Flask backend / model expects.
-// Called inside predictManual() in script.js as:  const payload = buildPayload();
+// Reads form inputs, computes all derived + engineered features,
+// and returns a single flat object. Backend receives the 11 base
+// features; the 7 engineered ones are also included so the frontend
+// computeFeatureInfluence() can use them directly without re-computing.
+// Text originals are stored under _-prefixed keys for history replay.
 function buildPayload() {
+  const username  = (document.getElementById('username_text')?.value  || '').trim();
+  const fullname  = (document.getElementById('fullname_text')?.value  || '').trim();
+  const bio       = (document.getElementById('bio_text')?.value       || '').trim();
+  const hasPic    = document.getElementById('profile_pic')?.checked   ? 1 : 0;
+  const hasUrl    = document.getElementById('external_url')?.checked  ? 1 : 0;
+  const isPrivate = document.getElementById('private')?.checked       ? 1 : 0;
+  const followers = parseFloat(document.getElementById('followers')?.value)  || 0;
+  const following = parseFloat(document.getElementById('following')?.value)  || 0;
+  const posts     = parseFloat(document.getElementById('posts')?.value)      || 0;
+
+  // Derived features — computed from text inputs
+  const numRatioUsername = computeNumericRatio(username);
+  const numRatioFullname = computeNumericRatio(fullname);
+  const fullnameWords    = fullname ? fullname.trim().split(/\s+/).filter(Boolean).length : 0;
+  const descriptionLen   = bio.length;
+  const nameEqUsername   = (username && fullname &&
+    username.toLowerCase() === fullname.replace(/\s+/g, '').toLowerCase()) ? 1 : 0;
+
+  // Engineered features — must mirror Python engineer_features() exactly
+  const followerFollowRatio  = followers / (following + 1);
+  const postsPerFollower     = posts     / (followers + 1);
+  const followAggressiveness = following / (followers + posts + 1);
+  const profileCompleteness  = hasPic + (descriptionLen > 0 ? 1 : 0) + hasUrl + (fullnameWords > 0 ? 1 : 0);
+  const usernameSuspicion    = numRatioUsername * (1 - hasPic);
+  const nameAuthenticity     = fullnameWords * (1 - nameEqUsername);
+  const activityScore        = Math.log1p(posts) + Math.log1p(followers);
+
   return {
-    // Binary toggles — 1 if checked, 0 if not
-    "profile pic": document.getElementById('profile_pic').checked ? 1 : 0,
-    "external URL": document.getElementById('external_url').checked ? 1 : 0,
-    "private": document.getElementById('private').checked ? 1 : 0,
-    "name==username": document.getElementById('name_eq_username').checked ? 1 : 0,
-
-    // Numeric ratio fields (0.0 – 1.0)
-    "nums/length username": parseFloat(document.getElementById('nums_length_username').value) || 0,
-    "nums/length fullname": parseFloat(document.getElementById('nums_length_fullname').value) || 0,
-
-    // Numeric count fields
-    "fullname words": parseFloat(document.getElementById('fullname_words').value) || 0,
-    "description length": parseFloat(document.getElementById('description_length').value) || 0,
-    "#posts": parseFloat(document.getElementById('posts').value) || 0,
-    "#followers": parseFloat(document.getElementById('followers').value) || 0,
-    "#follows": parseFloat(document.getElementById('following').value) || 0,
+    // ── 11 base features (backend column names) ──────────────
+    "profile pic":          hasPic,
+    "nums/length username": numRatioUsername,
+    "fullname words":       fullnameWords,
+    "nums/length fullname": numRatioFullname,
+    "name==username":       nameEqUsername,
+    "description length":   descriptionLen,
+    "external URL":         hasUrl,
+    "private":              isPrivate,
+    "#posts":               posts,
+    "#followers":           followers,
+    "#follows":             following,
+    // ── 7 engineered features (for frontend visualisation) ───
+    "follower_follow_ratio":  followerFollowRatio,
+    "posts_per_follower":     postsPerFollower,
+    "follow_aggressiveness":  followAggressiveness,
+    "profile_completeness":   profileCompleteness,
+    "username_suspicion":     usernameSuspicion,
+    "name_authenticity":      nameAuthenticity,
+    "activity_score":         activityScore,
+    // ── Text originals (for history replay, ignored by backend) ──
+    "_username_text": username,
+    "_fullname_text": fullname,
+    "_bio_text":      bio,
   };
 }
 
@@ -1512,91 +1631,176 @@ function buildPayload() {
 
 
 // ── DEMO PRESET LOADER ───────────────────────────────────────
-// Called by onclick="loadPreset('bot'|'real'|'edge')" on the
-// three demo buttons in index.html.
-// 1. Fills all form fields with preset values.
-// 2. Fires predictManual() automatically after 150ms so the
-//    user sees the result without having to click Analyze Account.
 function loadPreset(type) {
   const presets = {
-    // Classic bot: no pic, mass following, zero posts, numeric username
     bot: {
-      profile_pic: false, private: false, external_url: false, name_eq_username: true,
+      profile_pic: false, private: false, external_url: false,
       followers: 12, following: 3400, posts: 0,
-      description_length: 0, fullname_words: 0,
-      nums_length_username: 0.62, nums_length_fullname: 0.0
+      username_text: 'user738291', fullname_text: '', bio_text: '',
     },
-    // Typical real account: has pic, URL, normal ratio
     real: {
-      profile_pic: true, private: false, external_url: true, name_eq_username: false,
+      profile_pic: true, private: false, external_url: true,
       followers: 4800, following: 320, posts: 287,
-      description_length: 72, fullname_words: 2,
-      nums_length_username: 0.0, nums_length_fullname: 0.0
+      username_text: 'john.smith', fullname_text: 'John Smith',
+      bio_text: 'Travel photographer based in NYC 📸',
     },
-    // Ambiguous edge case: has pic but private, low followers, some numbers
     edge: {
-      profile_pic: true, private: true, external_url: false, name_eq_username: false,
+      profile_pic: true, private: true, external_url: false,
       followers: 180, following: 950, posts: 14,
-      description_length: 18, fullname_words: 1,
-      nums_length_username: 0.22, nums_length_fullname: 0.0
-    }
+      username_text: 'user.22x', fullname_text: 'Alex',
+      bio_text: 'Just me.',
+    },
   };
 
   const p = presets[type];
   if (!p) return;
 
-  // Set the 4 toggle checkboxes and refresh their badge labels
-  ['profile_pic', 'private', 'external_url', 'name_eq_username'].forEach(id => {
+  // Toggles
+  ['profile_pic', 'private', 'external_url'].forEach(id => {
     const cb = document.getElementById(id);
-    if (cb) {
-      cb.checked = p[id];
-      updateToggleBadge(cb);   // keeps the ON/OFF pill + label text in sync
-    }
+    if (cb) { cb.checked = p[id]; updateToggleBadge(cb); }
   });
 
-  // Set the 7 numeric inputs
-  const numMap = {
-    followers: 'followers',
-    following: 'following',
-    posts: 'posts',
-    description_length: 'description_length',
-    fullname_words: 'fullname_words',
-    nums_length_username: 'nums_length_username',
-    nums_length_fullname: 'nums_length_fullname',
-  };
-  Object.entries(numMap).forEach(([key, elId]) => {
-    const el = document.getElementById(elId);
-    if (el) el.value = p[key];
+  // Number inputs
+  ['followers', 'following', 'posts'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = p[id];
   });
 
-  // Refresh the live profile preview card
-  if (typeof updatePreview === 'function') updatePreview();
+  // Text inputs — trigger hints after filling
+  const uEl = document.getElementById('username_text');
+  const fEl = document.getElementById('fullname_text');
+  const bEl = document.getElementById('bio_text');
+  if (uEl) { uEl.value = p.username_text; onUsernameInput(); }
+  if (fEl) { fEl.value = p.fullname_text; onFullnameInput(); }
+  if (bEl) { bEl.value = p.bio_text;      onBioInput(); }
 
-  // Auto-run prediction — short delay lets the DOM fields settle visually first
-  setTimeout(() => {
-    if (typeof predictManual === 'function') predictManual();
-  }, 150);
+  updatePreview();
+  setTimeout(() => { if (typeof predictManual === 'function') predictManual(); }, 150);
 }
 
 
-// ── EXPOSE TO GLOBAL SCOPE ───────────────────────────────────
-// These are called from inline HTML attributes (onclick, onchange)
-// so they must be on window. Add these lines alongside the existing
-// window.* assignments at the bottom of script.js.
-window.updateToggleBadge = updateToggleBadge;
-window.buildPayload = buildPayload;
-// window.renderHybridBreakdown = renderHybridBreakdown;
-window.loadPreset = loadPreset;
+// ── LIVE HINT HELPERS ─────────────────────────────────────────
+// Called on input events for the three text fields.
+// Renders small chip tags under each field showing auto-computed values.
+
+function renderHintChips(containerId, chips) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = chips.map(c =>
+    `<span class="hint-chip hint-chip--${c.level}">${c.text}</span>`
+  ).join('');
+}
+
+function onUsernameInput() {
+  const username = (document.getElementById('username_text')?.value || '').trim();
+  updatePreview();
+
+  if (!username) { renderHintChips('hint_username', []); return; }
+
+  const ratio    = computeNumericRatio(username);
+  const pct      = Math.round(ratio * 100);
+  const digitCnt = (username.match(/[0-9]/g) || []).length;
+
+  const chips = [];
+
+  // Length chip
+  chips.push({ text: `${username.length} chars`, level: 'neutral' });
+
+  // Digit ratio chip
+  if (ratio === 0) {
+    chips.push({ text: 'No numbers · clean', level: 'safe' });
+  } else if (ratio <= 0.2) {
+    chips.push({ text: `${digitCnt} numbers (${pct}%)`, level: 'safe' });
+  } else if (ratio <= 0.4) {
+    chips.push({ text: `${digitCnt} numbers (${pct}%) · suspicious`, level: 'warn' });
+  } else {
+    chips.push({ text: `${digitCnt} numbers (${pct}%) · high risk`, level: 'danger' });
+  }
+
+  // Name match chip — compare with fullname
+  const fullname = (document.getElementById('fullname_text')?.value || '').trim();
+  if (fullname) {
+    const match = username.toLowerCase() === fullname.replace(/\s+/g, '').toLowerCase();
+    chips.push(match
+      ? { text: 'Name = username · flag', level: 'warn' }
+      : { text: 'Name ≠ username · ok',  level: 'safe' }
+    );
+  }
+
+  renderHintChips('hint_username', chips);
+}
+
+function onFullnameInput() {
+  const fullname = (document.getElementById('fullname_text')?.value || '').trim();
+  updatePreview();
+
+  if (!fullname) { renderHintChips('hint_fullname', []); return; }
+
+  const words    = fullname.split(/\s+/).filter(Boolean).length;
+  const ratio    = computeNumericRatio(fullname);
+  const pct      = Math.round(ratio * 100);
+  const chips    = [];
+
+  // Word count
+  if (words >= 2)      chips.push({ text: `${words} words · looks real`,    level: 'safe' });
+  else if (words === 1)chips.push({ text: '1 word · borderline',             level: 'warn' });
+  else                 chips.push({ text: 'No name · suspicious',            level: 'danger' });
+
+  // Numeric ratio
+  if (ratio === 0)       chips.push({ text: 'No digits · clean',             level: 'safe' });
+  else if (ratio <= 0.1) chips.push({ text: `${pct}% digits`,                level: 'safe' });
+  else                   chips.push({ text: `${pct}% digits · suspicious`,   level: 'warn' });
+
+  // Name match update
+  const username = (document.getElementById('username_text')?.value || '').trim();
+  if (username) {
+    const match = username.toLowerCase() === fullname.replace(/\s+/g, '').toLowerCase();
+    chips.push(match
+      ? { text: 'Matches username · flag', level: 'warn' }
+      : { text: 'Differs from username',  level: 'safe' }
+    );
+    // Also refresh username hints so name-match chip stays in sync
+    onUsernameInput();
+  }
+
+  renderHintChips('hint_fullname', chips);
+}
+
+function onBioInput() {
+  const bio   = (document.getElementById('bio_text')?.value || '');
+  const chars = bio.length;
+  const chips = [];
+
+  if (chars === 0)       chips.push({ text: 'No bio · suspicious',       level: 'danger' });
+  else if (chars < 15)   chips.push({ text: `${chars} chars · very short`, level: 'warn' });
+  else if (chars < 40)   chips.push({ text: `${chars} chars · ok`,         level: 'safe' });
+  else                   chips.push({ text: `${chars} chars · detailed`,    level: 'safe' });
+
+  renderHintChips('hint_bio', chips);
+}
+
+// Called when profile_pic toggle changes (so username suspicion hint refreshes)
+function computeLiveHints() {
+  onUsernameInput();
+  onFullnameInput();
+  onBioInput();
+}
 
 // ── Expose globals ─────────────────────────────────────────
-window.predictManual = predictManual;
-window.predictFile = predictFile;
-window.exportResults = exportResults;
-window.goToPage = goToPage;
-window.replayHistory = replayHistory;
-window.loadPreset = loadPreset;
-window.fetchUsername = fetchUsername;
-window.validateField = validateField;
-window.validateRatio = validateRatio;
-window.updatePreview = updatePreview;
+window.predictManual     = predictManual;
+window.predictFile       = predictFile;
+window.exportResults     = exportResults;
+window.goToPage          = goToPage;
+window.replayHistory     = replayHistory;
+window.loadPreset        = loadPreset;
+window.fetchUsername     = fetchUsername;
+window.validateField     = validateField;
+window.validateRatio     = validateRatio;
+window.updatePreview     = updatePreview;
 window.updateToggleBadge = updateToggleBadge;
+window.buildPayload      = buildPayload;
+window.onUsernameInput   = onUsernameInput;
+window.onFullnameInput   = onFullnameInput;
+window.onBioInput        = onBioInput;
+window.computeLiveHints  = computeLiveHints;

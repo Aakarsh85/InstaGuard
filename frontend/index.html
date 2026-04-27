@@ -26,7 +26,7 @@
   <!-- Top nav bar -->
   <nav class="topnav">
     <div class="topnav-brand">
-      <a href="landing.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit">
+      <a href="landing.html" class="nav-brand-link">
         <div class="brand-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
@@ -71,7 +71,7 @@
             </div>
             <div class="mstat">
               <div class="mstat-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
-              <span class="mstat-val">11</span>
+              <span class="mstat-val">18</span>
               <span class="mstat-lbl">Features</span>
             </div>
             <div class="mstat">
@@ -156,15 +156,15 @@
             Try a demo
           </div>
           <div class="demo-preset-btns">
-            <button class="demo-btn bot" onclick="loadPreset('bot')">
+            <button class="demo-btn bot" id="presetBotBtn">
               <span class="demo-btn-dot"></span>
               Bot account
             </button>
-            <button class="demo-btn real" onclick="loadPreset('real')">
+            <button class="demo-btn real" id="presetRealBtn">
               <span class="demo-btn-dot"></span>
               Real account
             </button>
-            <button class="demo-btn edge" onclick="loadPreset('edge')">
+            <button class="demo-btn edge" id="presetEdgeBtn">
               <span class="demo-btn-dot"></span>
               Edge case
             </button>
@@ -181,7 +181,7 @@
             <span class="ufb-at">@</span>
             <input type="text" id="usernameInput" placeholder="Enter any Instagram username..." class="ufb-input" maxlength="50" />
           </div>
-          <button class="ufb-btn" id="fetchUsernameBtn" onclick="fetchUsername()">
+          <button class="ufb-btn" id="fetchUsernameBtn">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
             Estimate features
           </button>
@@ -211,7 +211,7 @@
               </div>
               <label class="toggle-field-wrap" for="profile_pic">
                 <div class="toggle-switch">
-                  <input type="checkbox" id="profile_pic" onchange="updateToggleBadge(this); updatePreview()" />
+                  <input type="checkbox" id="profile_pic" />
                   <span class="toggle-slider"></span>
                 </div>
                 <span class="toggle-label-text"><strong id="profile_pic_label">No profile picture</strong></span>
@@ -227,7 +227,7 @@
               </div>
               <label class="toggle-field-wrap" for="private">
                 <div class="toggle-switch">
-                  <input type="checkbox" id="private" onchange="updateToggleBadge(this)" />
+                  <input type="checkbox" id="private" />
                   <span class="toggle-slider"></span>
                 </div>
                 <span class="toggle-label-text"><strong id="private_label">Public account</strong></span>
@@ -243,27 +243,11 @@
               </div>
               <label class="toggle-field-wrap" for="external_url">
                 <div class="toggle-switch">
-                  <input type="checkbox" id="external_url" onchange="updateToggleBadge(this)" />
+                  <input type="checkbox" id="external_url" />
                   <span class="toggle-slider"></span>
                 </div>
                 <span class="toggle-label-text"><strong id="external_url_label">No external URL</strong></span>
                 <span class="toggle-state-badge" id="external_url_badge">OFF</span>
-              </label>
-            </div>
-
-            <!-- Name == Username -->
-            <div class="field-group">
-              <div class="field-label-row">
-                <label>Name matches username</label>
-                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Is the display name exactly the same as the username? This is a mild fake signal.</div></div>
-              </div>
-              <label class="toggle-field-wrap" for="name_eq_username">
-                <div class="toggle-switch">
-                  <input type="checkbox" id="name_eq_username" onchange="updateToggleBadge(this)" />
-                  <span class="toggle-slider"></span>
-                </div>
-                <span class="toggle-label-text"><strong id="name_eq_username_label">Name ≠ username</strong></span>
-                <span class="toggle-state-badge" id="name_eq_username_badge">OFF</span>
               </label>
             </div>
 
@@ -277,7 +261,7 @@
                 <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Number of people following this account. Fake accounts often have very few or suspiciously round numbers.</div></div>
               </div>
               <div class="field-input-wrap" id="wrap_followers">
-                <input type="number" id="followers" placeholder="e.g. 300" min="0" oninput="validateField(this); updatePreview()" />
+                <input type="number" id="followers" placeholder="e.g. 300" min="0" />
                 <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
               </div>
               <span class="field-feedback" id="fb_followers"></span>
@@ -290,7 +274,7 @@
                 <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Number of accounts this user follows. A very high following count with few followers is a red flag.</div></div>
               </div>
               <div class="field-input-wrap" id="wrap_following">
-                <input type="number" id="following" placeholder="e.g. 180" min="0" oninput="validateField(this); updatePreview()" />
+                <input type="number" id="following" placeholder="e.g. 180" min="0" />
                 <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></span>
               </div>
               <span class="field-feedback" id="fb_following"></span>
@@ -303,70 +287,56 @@
                 <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Total number of posts. Fake accounts typically have 0 or very few posts.</div></div>
               </div>
               <div class="field-input-wrap" id="wrap_posts">
-                <input type="number" id="posts" placeholder="e.g. 120" min="0" oninput="validateField(this); updatePreview()" />
+                <input type="number" id="posts" placeholder="e.g. 120" min="0" />
                 <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
               </div>
               <span class="field-feedback" id="fb_posts"></span>
             </div>
 
-            <!-- Description Length -->
+            <!-- ── SECTION: Name & bio ── -->
+            <div class="section-divider">Name &amp; bio</div>
+
+            <!-- Username — computes numeric ratio automatically -->
             <div class="field-group">
               <div class="field-label-row">
-                <label for="description_length">Bio length (chars)</label>
-                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Character count of the profile bio. Real accounts often have meaningful bios; fake ones usually don't.</div></div>
+                <label for="username_text">Username</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">The account's @username handle. The numeric ratio is computed automatically — bots often have heavily numeric usernames like "user48392".</div></div>
               </div>
-              <div class="field-input-wrap" id="wrap_description_length">
-                <input type="number" id="description_length" placeholder="e.g. 50" min="0" max="150" oninput="validateField(this); updatePreview()" />
-                <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg></span>
+              <div class="field-input-wrap" id="wrap_username_text">
+                <span class="field-prefix">@</span>
+                <input type="text" id="username_text" placeholder="e.g. john.smith99" maxlength="50" autocomplete="off" />
               </div>
-              <span class="field-feedback" id="fb_description_length"></span>
+              <div class="field-live-hint" id="hint_username"></div>
             </div>
 
-            <!-- ── SECTION: Name analysis ── -->
-            <div class="section-divider">Name analysis</div>
-
-            <!-- Full Name Words -->
+            <!-- Display name — computes word count + numeric ratio automatically -->
             <div class="field-group">
               <div class="field-label-row">
-                <label for="fullname_words">Full name word count</label>
-                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Number of words in the display name. e.g. "John Smith" = 2. Real people usually have 2+ words.</div></div>
+                <label for="fullname_text">Display name</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">The full display name shown on the profile. Word count and numeric ratio are computed automatically. Name matching the username is also detected.</div></div>
               </div>
-              <div class="field-input-wrap" id="wrap_fullname_words">
-                <input type="number" id="fullname_words" placeholder="e.g. 2" min="0" max="10" oninput="validateField(this)" />
+              <div class="field-input-wrap" id="wrap_fullname_text">
+                <input type="text" id="fullname_text" placeholder="e.g. John Smith" maxlength="100" autocomplete="off" />
                 <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></span>
               </div>
-              <span class="field-feedback" id="fb_fullname_words"></span>
+              <div class="field-live-hint" id="hint_fullname"></div>
             </div>
 
-            <!-- Nums/Length Username -->
-            <div class="field-group">
+            <!-- Bio — computes character length automatically -->
+            <div class="field-group field-group-wide">
               <div class="field-label-row">
-                <label for="nums_length_username">Username numeric ratio</label>
-                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Proportion of digits in the username (0–1). e.g. "user1234" = 4/8 = 0.50. Bots often have highly numeric usernames.</div></div>
+                <label for="bio_text">Profile bio</label>
+                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Paste the account's bio here. Character length is computed automatically. Real accounts often have meaningful bios; fake ones are usually empty.</div></div>
               </div>
-              <div class="field-input-wrap" id="wrap_nums_length_username">
-                <input type="number" id="nums_length_username" placeholder="e.g. 0.27" min="0" max="1" step="0.01" oninput="validateRatio(this)" />
-                <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></span>
+              <div class="field-input-wrap field-input-wrap-textarea" id="wrap_bio_text">
+                <textarea id="bio_text" placeholder="Paste the account's bio here..." maxlength="150" rows="2"></textarea>
               </div>
-              <span class="field-feedback" id="fb_nums_length_username"></span>
-            </div>
-
-            <!-- Nums/Length Fullname -->
-            <div class="field-group">
-              <div class="field-label-row">
-                <label for="nums_length_fullname">Full name numeric ratio</label>
-                <div class="tooltip-wrap"><span class="tooltip-trigger">ⓘ</span><div class="tooltip-box">Proportion of digits in the full display name (0–1). Real names rarely have numbers.</div></div>
-              </div>
-              <div class="field-input-wrap" id="wrap_nums_length_fullname">
-                <input type="number" id="nums_length_fullname" placeholder="e.g. 0.0" min="0" max="1" step="0.01" oninput="validateRatio(this)" />
-                <span class="field-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></span>
-              </div>
-              <span class="field-feedback" id="fb_nums_length_fullname"></span>
+              <div class="field-live-hint" id="hint_bio"></div>
             </div>
 
           </div><!-- /form-grid -->
 
-          <button class="predict-btn" id="predictManualBtn" onclick="predictManual()">
+          <button class="predict-btn" id="predictManualBtn">
             <span class="predict-btn-inner">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 3l14 9-14 9V3z"/></svg>
               Analyze account
@@ -458,12 +428,13 @@
           </div>
 
           <!-- CSV column reference -->
-          <div style="margin: 10px 0 0; padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; font-size: 11.5px; color: var(--muted2); line-height: 1.6;">
-            <strong style="color:var(--text2);">Expected CSV columns:</strong><br>
-            profile pic, nums/length username, fullname words, nums/length fullname, name==username, description length, external URL, private, #posts, #followers, #follows
-          </div>
+            <div class="csv-hint-box">
+              <strong class="csv-hint-label">Expected CSV columns (11 base features):</strong><br>
+              profile pic, nums/length username, fullname words, nums/length fullname, name==username, description length, external URL, private, #posts, #followers, #follows<br>
+              <span class="csv-hint-note">Engineered features are computed automatically by the backend.</span>
+            </div>
 
-          <button class="predict-btn" id="predictBulkBtn" onclick="predictFile()">
+          <button class="predict-btn" id="predictBulkBtn">
             <span class="predict-btn-inner">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               Upload &amp; analyze
@@ -475,7 +446,7 @@
           <div class="sk-line sk-title"></div>
           <div class="sk-grid"><div class="sk-stat-box"></div><div class="sk-stat-box"></div><div class="sk-stat-box"></div></div>
           <div class="sk-line sk-sub"></div>
-          <div class="sk-line sk-sub" style="width:70%"></div>
+          <div class="sk-line sk-sub sk-sub--narrow"></div>
         </div>
 
         <div class="bulk-result-wrap hidden" id="bulkResults">
@@ -488,7 +459,7 @@
               <div class="bss-item fake"><span class="bss-val" id="bssFake">0</span><span class="bss-lbl">Fake</span></div>
               <div class="bss-divider"></div>
               <div class="bss-item conf"><span class="bss-val" id="bssConf">—</span><span class="bss-lbl">Avg confidence</span></div>
-              <button class="export-btn" id="exportBtn" onclick="exportResults()">
+              <button class="export-btn" id="exportBtn">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Export CSV
               </button>
