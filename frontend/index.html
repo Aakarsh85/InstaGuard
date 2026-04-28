@@ -354,6 +354,17 @@
             <div class="sk-line sk-thin"></div>
           </div>
 
+          <!-- Slow load warning card — manual -->
+          <div class="slow-load-card hidden" id="manualSlowLoad">
+            <div class="slc-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="slc-body">
+              <p class="slc-title">Taking longer than usual…</p>
+              <p class="slc-desc">The server may be waking up (free tier). This usually takes 30–60 seconds. Please wait.</p>
+            </div>
+          </div>
+
           <div class="result-card hidden" id="manualResultCard">
             <div class="result-header">
               <div class="result-icon-wrap" id="resultIconWrap">
@@ -457,6 +468,17 @@
           <div class="sk-grid"><div class="sk-stat-box"></div><div class="sk-stat-box"></div><div class="sk-stat-box"></div></div>
           <div class="sk-line sk-sub"></div>
           <div class="sk-line sk-sub sk-sub--narrow"></div>
+        </div>
+
+        <!-- Slow load warning card — bulk -->
+        <div class="slow-load-card hidden" id="bulkSlowLoad">
+          <div class="slc-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="slc-body">
+            <p class="slc-title">Taking longer than usual…</p>
+            <p class="slc-desc">The server may be waking up (free tier). This usually takes 30–60 seconds. Please wait.</p>
+          </div>
         </div>
 
         <div class="bulk-result-wrap hidden" id="bulkResults">

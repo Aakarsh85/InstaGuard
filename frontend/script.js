@@ -787,45 +787,6 @@ function renderFeatureImportance(payload, result) {
   });
 }
 
-// ── Hybrid Engine Breakdown renderer ──────────────────────
-// function renderHybridBreakdown(breakdown) {
-//   const el = document.getElementById("hybridBreakdown");
-//   if (!breakdown || !el) return;
-//   el.style.display = "block";
-
-//   const mlPct = Math.round((breakdown.ml?.fake_probability || 0) * 100);
-//   const rulePct = Math.round((breakdown.rules?.score || 0) * 100);
-//   const finalPct = Math.round(
-//     ((breakdown.ml?.fake_probability || 0) * 0.6 +
-//       (breakdown.rules?.score || 0) * 0.4) * 100
-//   );
-
-//   document.getElementById("hybridBarML").style.width = mlPct + "%";
-//   document.getElementById("hybridValML").textContent = mlPct + "%";
-//   document.getElementById("hybridBarRules").style.width = rulePct + "%";
-//   document.getElementById("hybridValRules").textContent = rulePct + "%";
-//   document.getElementById("hybridBarFinal").style.width = finalPct + "%";
-//   document.getElementById("hybridValFinal").textContent = finalPct + "%";
-
-//   const list = document.getElementById("rulesFiredList");
-//   if (!list) return;
-//   list.innerHTML = "";
-
-//   const rules = breakdown.rules?.rules_fired || [];
-//   if (rules.length === 0) {
-//     list.innerHTML = `<span style="font-size:12px;color:rgba(255,255,255,0.3);">No rules triggered</span>`;
-//   } else {
-//     rules.forEach(r => {
-//       const item = document.createElement("div");
-//       item.className = "rule-fired-item";
-//       item.innerHTML = `
-//         <span class="rule-dot ${r.signal}"></span>
-//         ${r.rule}
-//         <span style="margin-left:auto;opacity:0.4;font-size:11px;">${r.signal}</span>`;
-//       list.appendChild(item);
-//     });
-//   }
-// }
 
 // ── Plain-English Explanation — updated for new features ──
 function generateExplanation(payload, result) {
@@ -1074,8 +1035,11 @@ async function predictManual() {
   }
 
   hide(manualResultCard); hide(manualError);
+  const manualSlowLoad = document.getElementById("manualSlowLoad");
+  hide(manualSlowLoad);
   show(manualSkeleton);
   if (predictManualBtn) predictManualBtn.disabled = true;
+  const manualSlowTimer = setTimeout(() => { show(manualSlowLoad); }, 8000);
 
   // buildPayload() is defined in index.html and maps UI → backend column names
   const payload = buildPayload();
@@ -1099,6 +1063,9 @@ async function predictManual() {
     hide(manualSkeleton);
     showManualError(err.message || "Connection error. Is the backend running?");
   } finally {
+    clearTimeout(manualSlowTimer);
+    const manualSlowLoad = document.getElementById("manualSlowLoad");
+    hide(manualSlowLoad);
     if (predictManualBtn) predictManualBtn.disabled = false;
   }
 }
@@ -1111,8 +1078,11 @@ async function predictFile() {
   }
 
   hide(bulkResults); hide(bulkError);
+  const bulkSlowLoad = document.getElementById("bulkSlowLoad");
+  hide(bulkSlowLoad);
   show(bulkSkeleton);
   if (predictBulkBtn) predictBulkBtn.disabled = true;
+  const bulkSlowTimer = setTimeout(() => { show(bulkSlowLoad); }, 8000);
 
   try {
     const formData = new FormData();
@@ -1133,6 +1103,9 @@ async function predictFile() {
     hide(bulkSkeleton);
     showBulkError(err.message || "Connection error. Is the backend running?");
   } finally {
+    clearTimeout(bulkSlowTimer);
+    const bulkSlowLoad = document.getElementById("bulkSlowLoad");
+    hide(bulkSlowLoad);
     if (predictBulkBtn) predictBulkBtn.disabled = false;
   }
 }
@@ -1665,58 +1638,6 @@ function buildPayload() {
     "_bio_text": bio,
   };
 }
-
-
-// ── RENDER HYBRID ENGINE BREAKDOWN ───────────────────────────
-// Called inside renderManualResult() in script.js after a
-// prediction response comes back from the backend.
-// Populates the three animated bar rows (ML, Rules, Final)
-// and the list of rules that actually fired.
-
-// VERY BAD RESULTS SO FOR NOW IS COMMENTED
-
-// function renderHybridBreakdown(breakdown) {
-//   const el = document.getElementById('hybridBreakdown');
-//   if (!breakdown || !el) return;
-//   el.style.display = 'block';
-
-//   // Convert 0-1 probabilities to integer percentages for display
-//   const mlPct = Math.round((breakdown.ml?.fake_probability || 0) * 100);
-//   const rulePct = Math.round((breakdown.rules?.score || 0) * 100);
-//   const finalPct = Math.round(
-//     ((breakdown.ml?.fake_probability || 0) * 0.6 +   // 60% ML weight
-//       (breakdown.rules?.score || 0) * 0.4)    // 40% rules weight
-//     * 100
-//   );
-
-//   // Animate the three progress bars
-//   document.getElementById('hybridBarML').style.width = mlPct + '%';
-//   document.getElementById('hybridValML').textContent = mlPct + '%';
-//   document.getElementById('hybridBarRules').style.width = rulePct + '%';
-//   document.getElementById('hybridValRules').textContent = rulePct + '%';
-//   document.getElementById('hybridBarFinal').style.width = finalPct + '%';
-//   document.getElementById('hybridValFinal').textContent = finalPct + '%';
-
-//   // Render fired rules list
-//   const list = document.getElementById('rulesFiredList');
-//   list.innerHTML = '';
-//   const rules = breakdown.rules?.rules_fired || [];
-
-//   if (rules.length === 0) {
-//     list.innerHTML = '<span style="font-size:12px;color:rgba(255,255,255,0.3);">No rules triggered</span>';
-//   } else {
-//     rules.forEach(r => {
-//       const item = document.createElement('div');
-//       item.className = 'rule-fired-item';
-//       // Green dot for real signal, red dot for fake signal
-//       item.innerHTML = `
-//         <span class="rule-dot ${r.signal}"></span>
-//         ${r.rule}
-//         <span style="margin-left:auto;opacity:0.4;font-size:11px;">${r.signal}</span>`;
-//       list.appendChild(item);
-//     });
-//   }
-// }
 
 
 // ── DEMO PRESET LOADER ───────────────────────────────────────

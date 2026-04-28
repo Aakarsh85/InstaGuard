@@ -2844,3 +2844,51 @@ label {
     padding: 0 14px;
   }
 }
+
+/* ============================================================
+   SLOW LOAD WARNING CARD
+   ============================================================ */
+.slow-load-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  margin-top: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(217, 119, 6, 0.30);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.slc-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  background: rgba(217, 119, 6, 0.10);
+  border: 1px solid rgba(217, 119, 6, 0.20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--warn);
+}
+
+.slc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slc-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--warn);
+  margin: 0;
+}
+
+.slc-desc {
+  font-size: 0.80rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
